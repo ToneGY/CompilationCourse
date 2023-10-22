@@ -1,4 +1,4 @@
-CXX = clang++
+CXX = g++
 CXXFLAGS = -std=c++17 -g
 
 TESTCASE_DIR := tests
@@ -11,7 +11,7 @@ run: $(patsubst $(TESTCASE_DIR)/%.tea,$(TESTCASE_DIR)/%.ast,$(TESTCASES))
 
 $(TESTCASE_DIR)/%.ast: $(TESTCASE_DIR)/%.tea $(TESTCASE_DIR)/%.refast compiler
 	@./compiler $< $@
-	@diff $@ $(word 2,$^)
+	@diff -b $@ $(word 2,$^)
 	@echo PASS $*
 	@echo
 

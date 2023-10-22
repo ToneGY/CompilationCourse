@@ -4,7 +4,6 @@ typedef struct A_pos_* A_pos; //position information
 typedef struct A_type_* A_type;
 typedef struct A_varDecl_* A_varDecl;
 typedef struct A_varDef_* A_varDef;
-typedef struct A_rightVal_* A_rightVal;
 typedef struct A_arithExpr_* A_arithExpr;
 typedef struct A_boolExpr_* A_boolExpr;
 typedef struct A_arithBiOpExpr_* A_arithBiOpExpr;
@@ -26,8 +25,6 @@ typedef struct A_varDefScalar_* A_varDefScalar;
 typedef struct A_varDefArray_* A_varDefArray;
 typedef struct A_varDeclScalar_* A_varDeclScalar;
 typedef struct A_varDeclArray_* A_varDeclArray;
-typedef struct A_varDecl_* A_varDecl;
-typedef struct A_varDef_* A_varDef;
 typedef struct A_varDeclStmt_* A_varDeclStmt;
 typedef struct A_varDeclList_* A_varDeclList;
 typedef struct A_structDef_* A_structDef;
