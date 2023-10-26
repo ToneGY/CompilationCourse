@@ -188,7 +188,8 @@ exprUnit : NUM { $$ = $1; }
 
 fnCall : ID '(' rightValList')' { $$ = A_FnCall($1->pos, $1->u.id, $3); }
 
-boolBiOpExpr : boolExpr boolBiOp boolUnit { $$ = A_BoolBiOpExpr($1->pos, $2, $1, $3); }
+boolBiOpExpr 
+	: boolExpr boolBiOp boolExpr { $$ = A_BoolBiOpExpr($1->pos, $2, $1, $3); }
 
 boolExpr : boolBiOpExpr { $$ = A_BoolBiOp_Expr($1->pos, $1); }
 	| boolUnit { $$ = A_BoolExpr($1->pos, $1); }

@@ -18,7 +18,7 @@ extern int line, col;
 <COMMENT2>. { col+=yyleng; }
 
 <INITIAL>"\n" { ++line; col = 1; }
-<INITIAL>" "|"\r"|"\t" { col += yyleng; }
+<INITIAL>" "|"\r"|"\t"|"\r" { col += yyleng; }
 
 <INITIAL>"+" {yylval.token = A_Pos(line, col); col+=yyleng; return OP_ADD;}
 <INITIAL>"-" {yylval.token = A_Pos(line, col); col+=yyleng; return OP_SUB;}
