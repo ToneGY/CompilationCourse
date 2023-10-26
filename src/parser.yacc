@@ -163,6 +163,7 @@ leftVal : ID  { $$ = A_IdExprLVal($1->pos, $1->u.id); }
 	| arrayExpr { $$ = A_ArrExprLVal($1->pos, $1); }
 	| memberExpr { $$ = A_MemberExprLVal($1->pos, $1); }
 
+
 rightVal : arithExpr { $$ = A_ArithExprRVal($1->pos, $1); }
 	| boolExpr { $$ = A_BoolExprRVal($1->pos, $1); }
 	
@@ -198,7 +199,7 @@ comExpr : exprUnit comOp exprUnit { $$ = A_ComExpr($1->pos, $2, $1, $3); }
 
 boolUOpExpr : '!' boolUnit { $$ = A_BoolUOpExpr($1, A_not, $2); }
 
-boolUnit : '(' comExpr ')' { $$ = A_ComExprUnit($1, $2); }
+boolUnit : comExpr { $$ = A_ComExprUnit($1->pos, $1); }
 	| '(' boolExpr ')' { $$ = A_BoolExprUnit($1, $2); }
 	| boolUOpExpr { $$ = A_BoolUOpExprUnit($1->pos, $1); }
 
