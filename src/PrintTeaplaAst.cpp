@@ -138,7 +138,7 @@ void print_aA_BoolBiOpExpr(aA_boolBiOpExpr boolBiOpExpr, ostream& os){
     if(!boolBiOpExpr) return;
     print_aA_BoolExpr(boolBiOpExpr->left, os);
     os << boolBiOps[boolBiOpExpr->op];
-    print_aA_BoolUnit(boolBiOpExpr->right, os);
+    print_aA_BoolExpr(boolBiOpExpr->right, os);
 }
 
 static const string boolUOps[] = {"!"};
@@ -176,9 +176,7 @@ void print_aA_BoolUnit(aA_boolUnit boolUnit, ostream& os){
     if(!boolUnit) return;
     switch(boolUnit->kind){
     case A_comOpExprKind:{
-        os << "(";
         print_aA_ComExpr(boolUnit->u.comExpr, os);
-        os << ")";
         break;
     }
     case A_boolExprKind:{
