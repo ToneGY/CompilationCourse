@@ -157,11 +157,22 @@ indexExpr : ID { $$ = A_IdIndexExpr($1->pos, $1->u.id); }
 
 arrayExpr : ID '[' indexExpr ']' { $$ = A_ArrayExpr($1->pos, $1->u.id, $3); }	
 
-memberExpr : ID '.' ID { $$ = A_MemberExpr($1->pos, $1->u.id, $3->u.id); }
+memberExpr 
+	: ID '.' ID { $$ = A_MemberExpr($1->pos, $1->u.id, $3->u.id); }
+	| arrayExpr '.' ID {}	
 
 leftVal : ID  { $$ = A_IdExprLVal($1->pos, $1->u.id); }
 	| arrayExpr { $$ = A_ArrExprLVal($1->pos, $1); }
 	| memberExpr { $$ = A_MemberExprLVal($1->pos, $1); }
+
+
+// leftVal : ID leftValRest{
+
+// }
+
+// leftValRest : '.' ID leftValRest
+// 			| '[' rightVal ']' leftValRest
+// 			| {$$ = NULL;}
 
 
 rightVal : arithExpr { $$ = A_ArithExprRVal($1->pos, $1); }
