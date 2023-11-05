@@ -9,11 +9,35 @@
 #include <unordered_map>
 
 
+struct t_type{
+    aA_type type;
+    int len;
+    t_type(aA_type type, int len){
+        this->len = len;
+        this->type = type;
+    }
+};
+
+struct fun_type{
+    A_pos pos;
+    vector<aA_varDecl>* params;
+    aA_type type;
+    bool isDef;
+    fun_type(A_pos pos,vector<aA_varDecl>* params,aA_type type,
+    bool isDef){
+        this->pos = pos;
+        this->params = params;
+        this->type = type;
+        this->isDef = isDef;
+    }
+};
+
 // you can use this type to store the type a token.
-typedef std::unordered_map<string, aA_type> typeMap; 
+typedef std::unordered_map<string, t_type> typeMap; 
 
 // you can use this map to store the members of a struct or params of a function.
-typedef std::unordered_map<string, vector<aA_varDecl>*> paramMemberMap;
+typedef std::unordered_map<string, vector<aA_varDecl>*> memberMap;
+typedef std::unordered_map<string, fun_type> paramMap;
 
 void check_Prog(std::ostream* out, aA_program p);
 void check_VarDecl(std::ostream* out, aA_varDeclStmt vd);
@@ -33,4 +57,6 @@ void check_FuncCall(std::ostream* out, aA_fnCall fc);
 void check_WhileStmt(std::ostream* out, aA_whileStmt ws);
 void check_CallStmt(std::ostream* out, aA_callStmt cs);
 void check_ReturnStmt(std::ostream* out, aA_returnStmt rs);
+
+string get_TypeString(aA_type t);
 

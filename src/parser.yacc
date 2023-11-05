@@ -152,28 +152,21 @@ programElement
 
 assignStmt : leftVal '=' rightVal ';' { $$ = A_AssignStmt($1->pos, $1, $3); }
 
-indexExpr : ID { $$ = A_IdIndexExpr($1->pos, $1->u.id); }
+indexExpr 
+	: ID { $$ = A_IdIndexExpr($1->pos, $1->u.id); }
 	| NUM { $$ = A_NumIndexExpr($1->pos, $1->u.num); }
 
-arrayExpr : ID '[' indexExpr ']' { $$ = A_ArrayExpr($1->pos, $1->u.id, $3); }	
+arrayExpr 
+	: ID '[' indexExpr ']' { $$ = A_ArrayExpr($1->pos, $1->u.id, $3); }	
 
 memberExpr 
 	: ID '.' ID { $$ = A_MemberExpr($1->pos, $1->u.id, $3->u.id); }
 	| arrayExpr '.' ID {}	
 
-leftVal : ID  { $$ = A_IdExprLVal($1->pos, $1->u.id); }
+leftVal 
+	: ID  { $$ = A_IdExprLVal($1->pos, $1->u.id); }
 	| arrayExpr { $$ = A_ArrExprLVal($1->pos, $1); }
 	| memberExpr { $$ = A_MemberExprLVal($1->pos, $1); }
-
-
-// leftVal : ID leftValRest{
-
-// }
-
-// leftValRest : '.' ID leftValRest
-// 			| '[' rightVal ']' leftValRest
-// 			| {$$ = NULL;}
-
 
 rightVal : arithExpr { $$ = A_ArithExprRVal($1->pos, $1); }
 	| boolExpr { $$ = A_BoolExprRVal($1->pos, $1); }
@@ -211,10 +204,11 @@ comExpr : exprUnit comOp exprUnit { $$ = A_ComExpr($1->pos, $2, $1, $3); }
 boolUOpExpr : '!' boolUnit { $$ = A_BoolUOpExpr($1, A_not, $2); }
 
 boolUnit : comExpr { $$ = A_ComExprUnit($1->pos, $1); }
-	| '(' boolExpr ')' { $$ = A_BoolExprUnit($1, $2); }
+	| boolExpr { $$ = A_BoolExprUnit($1->pos, $1); }
 	| boolUOpExpr { $$ = A_BoolUOpExprUnit($1->pos, $1); }
 
-boolBiOp : OP_AND { $$ = A_and; }
+boolBiOp 
+	: OP_AND { $$ = A_and; }
 	| OP_OR { $$ = A_or; }
 
 comOp : OP_LT { $$ = A_lt; }
@@ -238,21 +232,25 @@ varDeclScalar : ID type { $$ = A_VarDeclScalar($1->pos, $1->u.id, $2); }
 
 varDeclArray : ID '[' NUM ']' type { $$ = A_VarDeclArray($1->pos, $1->u.id, $3->u.num, $5); }
 
-varDecl : varDeclScalar { $$ = A_VarDecl_Scalar($1->pos, $1); }
+varDecl 
+	: varDeclScalar { $$ = A_VarDecl_Scalar($1->pos, $1); }
 	| varDeclArray { $$ = A_VarDecl_Array($1->pos, $1); }
 
 defScalar : ID type '=' rightVal { $$ = A_VarDefScalar($1->pos, $1->u.id, $2, $4); }
 
-varDefArray : ID '[' NUM ']' type '=' '{' rightValList '}' { $$ = A_VarDefArray($1->pos, $1->u.id, $3->u.num, $5, $8); }
+varDefArray 
+	: ID '[' NUM ']' type '=' '{' rightValList '}' { $$ = A_VarDefArray($1->pos, $1->u.id, $3->u.num, $5, $8); }
 
-varDef : defScalar { $$ = A_VarDef_Scalar($1->pos, $1); }
+varDef 
+	: defScalar { $$ = A_VarDef_Scalar($1->pos, $1); }
 	| varDefArray { $$ = A_VarDef_Array($1->pos, $1); }
 
 type : ':' nativeType { $$ = A_NativeType($1, $2); }
 	| ':' ID { $$ = A_StructType($1, $2->u.id); }
 	| { $$ = NULL; }
 
-type_ret : RET_ARROW nativeType { $$ = A_NativeType($1, $2); }
+type_ret 
+	: RET_ARROW nativeType { $$ = A_NativeType($1, $2); }
 	| RET_ARROW ID { $$ = A_StructType($1, $2->u.id); }
 	| { $$ = NULL; }
 
@@ -274,7 +272,8 @@ fnDecl : FN ID '(' paramDeclList ')' type_ret { $$ = A_FnDecl($1, $2->u.id, $4, 
 
 fnDef : fnDecl codeBlock { $$ = A_FnDef($1->pos, $1, $2); }
 
-codeBlockStmt : varDeclStmt { $$ = A_BlockVarDeclStmt($1->pos, $1); }
+codeBlockStmt 
+	: varDeclStmt { $$ = A_BlockVarDeclStmt($1->pos, $1); }
 	| assignStmt { $$ = A_BlockAssignStmt($1->pos, $1); }
 	| callStmt { $$ = A_BlockCallStmt($1->pos, $1); }
 	| ifStmt { $$ = A_BlockIfStmt($1->pos, $1); }

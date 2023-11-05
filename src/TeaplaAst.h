@@ -1,4 +1,4 @@
-rightVal#pragma once
+#pragma once
 
 #include "TeaplAst.h"
 #include <string>
