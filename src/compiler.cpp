@@ -31,7 +31,7 @@ int main(int argc, char * argv[]) {
     freopen(argv[1], "r", stdin);  
     ofstream ASTStream;
     ASTStream.open(argv[2]);
-
+    printf("------------------------------------%s---------------------------\n",argv[2]);
     yyparse();
     
     aroot = aA_Program(root);

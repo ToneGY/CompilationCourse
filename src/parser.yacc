@@ -161,7 +161,6 @@ arrayExpr
 
 memberExpr 
 	: ID '.' ID { $$ = A_MemberExpr($1->pos, $1->u.id, $3->u.id); }
-	| arrayExpr '.' ID {}	
 
 leftVal 
 	: ID  { $$ = A_IdExprLVal($1->pos, $1->u.id); }
