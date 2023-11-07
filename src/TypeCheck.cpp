@@ -350,7 +350,6 @@ void check_FnDef(std::ostream *out, aA_fnDef fd)
     if (!fd)
         return;
     // check_FnDecl(out, fd->fnDecl);
-    // todo    write your code here
     /*
         Hint: you may pay attention to the function parameters, local variables and global variables.
     */
@@ -373,13 +372,9 @@ void check_FnDef(std::ostream *out, aA_fnDef fd)
         }
         block_token2Type.emplace(*id, t_type(type, len));
     }
-
-
     for(auto cs : fd->stmts){
         check_CodeblockStmt(out, cs);
     }
-
-
     curFunc = NULL;
     block_token2Type.clear();
     return;
@@ -412,7 +407,6 @@ void check_CodeblockStmt(std::ostream *out, aA_codeBlockStmt cs)
     default:
         break;
     }
-
     return;
 }
 
@@ -453,6 +447,8 @@ void check_rightVal(std::ostream *out, t_type leftVal, aA_rightVal rv, bool fnCa
         if(t1 != "int" && t1 != "bool" || leftVal.len > 0){
             if(leftVal.len > 0) t1+="["+std::to_string(leftVal.len)+"]";
             error_print(out, rv->pos, "You cannot assign a right value of type 'bool' to a " + str + " of type '"+ t1 +"'.");
+        }else{
+            error_print(out, rv->pos, "Warning: Boolean type as right value may not be legal.");
         }
         break;
     default:
@@ -470,7 +466,6 @@ void check_AssignStmt(std::ostream *out, aA_assignStmt as)
     {
         case A_leftValType::A_varValKind:
         {
-            // todo
             string* id = as->leftVal->u.id;
             t_type* t = getTtype(*id);
             if(t == nullptr) {
@@ -479,13 +474,15 @@ void check_AssignStmt(std::ostream *out, aA_assignStmt as)
                 else
                     error_print(out, as->pos, "Var '" + *id +"' is not defined.");
                 return;
+            }else if(t->len>0){
+                error_print(out, as->pos, "Cannot assign a value to array '" + *id +"'.");
+                return;
             }
             type = *t;
         }
         break;
         case A_leftValType::A_arrValKind:
         {
-            // todo
             string* id = as->leftVal->u.arrExpr->arr;
             t_type* t = getTtype(*id);
             if(t == nullptr) {
@@ -502,7 +499,6 @@ void check_AssignStmt(std::ostream *out, aA_assignStmt as)
         break;
         case A_leftValType::A_memberValKind:
         {
-            // todo
             type.len = 0;
             type.type = check_MemberExpr(out, as->leftVal->u.memberExpr);
             if(type.type == nullptr) type.len = -1;
@@ -539,6 +535,9 @@ t_type check_ArithExpr(std::ostream* out, aA_arithExpr ae){
                 if(type1.len > 0) t1 += "[]";
                 if(type2.len > 0) t2 += "[]";
                 error_print(out, left->pos, "Cannot operate between '" + t1 + "' and '" + t2 + "'.");
+                ret.len = -1;
+            }else if(type1.type->type == A_dataType::A_structTypeKind){
+                error_print(out, left->pos, "Operations between structures are not supported.");
                 ret.len = -1;
             }
             ret = type1;
@@ -716,11 +715,13 @@ void check_BoolUnit(std::ostream *out, aA_boolUnit bu)
         string t1_type = get_TypeString(t1.type);
         string t2_type = get_TypeString(t2.type);
 
-        if (t1_type != t2_type || t1.len != t2.len)
+        if (t1_type != t2_type || t1.len > 0 || t2.len > 0)
         {
             if(t1.len > 0) t1_type += "[]";
             if(t2.len > 0) t2_type += "[]";
             error_print(out, bu->pos, "'" + t1_type + "' is not comparable with '" + t2_type + "'.");
+        } else if(t1.type->type == A_dataType::A_structTypeKind){
+            error_print(out, bu->pos,"Comparison between structures is not supported.");
         }
         break;
     }
