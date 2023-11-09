@@ -82,11 +82,11 @@ void check_Prog(std::ostream *out, aA_program p)
         }
     }
 
-    for(auto fn: func2Param){
-        if(!fn.second.isDef){
-            error_print(out, fn.second.pos, "Function '" + fn.first + "' declared but not defined.");
-        }
-    }
+    // for(auto fn: func2Param){
+    //     if(!fn.second.isDef){
+    //         error_print(out, fn.second.pos, "Function '" + fn.first + "' declared but not defined.");
+    //     }
+    // }
 
     for (auto ele : p->programElements)
     {
@@ -184,7 +184,7 @@ void check_VarDecl(std::ostream *out, aA_varDeclStmt vd)
             g_token2Type.emplace(*id, t);
     }else {
         if(block_token2Type.find(*id) != block_token2Type.end()){
-            error_print(out, vd->pos, "Local variables '" + *id + "' conflicts with function params.");
+            error_print(out, vd->pos, "Local variables '" + *id + "' conflicts with function params or local variable.");
         }else if(g_token2Type.find(*id) != g_token2Type.end()){
             error_print(out, vd->pos, "Local variables '" + *id + "' conflicts with global variable.");
         }else if(func2Param.find(*id) != func2Param.end()){
