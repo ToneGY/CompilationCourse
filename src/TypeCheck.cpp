@@ -426,7 +426,11 @@ void check_rightVal(std::ostream *out, t_type leftVal, aA_rightVal rv, bool fnCa
     string t1, t2;
     string str = fnCall ? "formal parameter" : "left value";
     str = isRet ? "return statement" : str;
-    if(leftVal.len  < 0) return;
+    if(str == "left value" && leftVal.len > 0){
+        error_print(out, rv->pos, "Cannot assign a value to array.");
+        return;
+    } 
+    if(leftVal.len  < 0 || leftVal.type == nullptr) return;
     t_type rightType;
     switch (rv->kind)
     {
@@ -456,56 +460,47 @@ void check_rightVal(std::ostream *out, t_type leftVal, aA_rightVal rv, bool fnCa
     }
 }
 
+t_type check_leftVal(std::ostream* out, aA_leftVal lv, bool first = false){
+    t_type type = t_type(nullptr, -1);
+    switch (lv->kind)
+    {
+        case A_leftValType::A_varValKind:
+        {
+            string* id = lv->u.id;
+            t_type* t = getTtype(*id);
+            if(t == nullptr) {
+                if(func2Param.find(*id) != func2Param.end())
+                    error_print(out, lv->pos, "Cannot assign a value to function '" + *id +"'.");
+                else
+                    error_print(out, lv->pos, "Var '" + *id +"' is not defined.");
+                return type;
+            }
+            type.type = t->type;
+            type.len = t->len;
+        }
+        break;
+        case A_leftValType::A_arrValKind:
+        {
+            type.type = check_ArrayExpr(out, lv->u.arrExpr);
+            type.len = 0;
+        }
+        break;
+        case A_leftValType::A_memberValKind:
+        {
+            type = check_MemberExpr(out, lv->u.memberExpr);
+        }
+        break;
+    }
+    return type;
+}
+
 void check_AssignStmt(std::ostream *out, aA_assignStmt as)
 {
     if (!as)
         return;
     string name;
     t_type type;
-    switch (as->leftVal->kind)
-    {
-        case A_leftValType::A_varValKind:
-        {
-            string* id = as->leftVal->u.id;
-            t_type* t = getTtype(*id);
-            if(t == nullptr) {
-                if(func2Param.find(*id) != func2Param.end())
-                    error_print(out, as->pos, "Cannot assign a value to function '" + *id +"'.");
-                else
-                    error_print(out, as->pos, "Var '" + *id +"' is not defined.");
-                return;
-            }else if(t->len>0){
-                error_print(out, as->pos, "Cannot assign a value to array '" + *id +"'.");
-                return;
-            }
-            type = *t;
-        }
-        break;
-        case A_leftValType::A_arrValKind:
-        {
-            string* id = as->leftVal->u.arrExpr->arr;
-            t_type* t = getTtype(*id);
-            if(t == nullptr) {
-                if(func2Param.find(*id) != func2Param.end())
-                    error_print(out, as->pos, "Cannot assign a value to function '" + *id +"'.");
-                else
-                    error_print(out, as->pos, "Var '" + *id +"' is not defined.");
-                return;
-            }
-            type = *t;
-            type.len = 0;
-            check_ArrayExpr(out, as->leftVal->u.arrExpr);
-        }
-        break;
-        case A_leftValType::A_memberValKind:
-        {
-            type.len = 0;
-            type.type = check_MemberExpr(out, as->leftVal->u.memberExpr);
-            if(type.type == nullptr) type.len = -1;
-        }
-        break;
-    }
-
+    type = check_leftVal(out, as->leftVal, true);
     check_rightVal(out, type, as->rightVal, false);
     return;
 }
@@ -550,23 +545,26 @@ t_type check_ArithExpr(std::ostream* out, aA_arithExpr ae){
     return ret;
 }
 
-void check_ArrayExpr(std::ostream *out, aA_arrayExpr ae)
+aA_type check_ArrayExpr(std::ostream *out, aA_arrayExpr ae)
 {
     if (!ae)
-        return;
+        return nullptr;
     /*
         Example:
             a[1] = 0;
         Hint:
             check the validity of the array index
     */
-    t_type* t = getTtype(*(ae->arr));
+    t_type t = check_leftVal(out, ae->arr);
+    if(t.type == nullptr) {
+        return nullptr;
+    }
 
     if(ae->idx->kind == A_indexExprKind::A_numIndexKind){
         int idx = ae->idx->u.num;
-        if(t->len > idx || idx < 0){
+        if(t.len > idx || idx < 0){
             error_print(out, ae->pos, "array out of index.");
-            return;
+            return nullptr;
         }
     } else if(ae->idx->kind == A_indexExprKind::A_idIndexKind){
         t_type* idx_type = getTtype(*(ae->idx->u.id));
@@ -577,31 +575,32 @@ void check_ArrayExpr(std::ostream *out, aA_arrayExpr ae)
         }else if(idx_type->type->type == A_dataType::A_structTypeKind){
             error_print(out, ae->pos, "Cannot use an struct variable as an array index.");      
         } else if(idx_type->type->u.nativeType != A_nativeType::A_intTypeKind){
-            error_print(out, ae->pos, "Array index must be of type int.");      
+            error_print(out, ae->pos, "Array index must be of type int.");
         }
     }
+    return t.type;
 }
 
-aA_type check_MemberExpr(std::ostream *out, aA_memberExpr me)
+t_type check_MemberExpr(std::ostream *out, aA_memberExpr me)
 {
     // check if the member exists and return the tyep of the member
     // you may need to check if the type of this expression matches with its
     // leftvalue or rightvalue, so return its aA_type would be a good way. Feel
     // free to change the design pattern if you need.
+    t_type ty = t_type(nullptr, -1);
     if (!me)
-        return nullptr;
+        return ty;
     /*
         Example:
             a.b
     */
-    string* structId = me->structId;
     string* memberId = me->memberId;
-    t_type* t = getTtype(*structId);
-    if(t->type->type != A_dataType::A_structTypeKind){
-        error_print(out, me->pos, "'" + *structId + "' is not a struct.");
-        return nullptr;
+    t_type t = check_leftVal(out, me->structId);
+    if(t.type == nullptr) return t;
+    if(t.type->type != A_dataType::A_structTypeKind){
+        error_print(out, me->pos, "'" + get_TypeString(t.type) + "' is not a struct.");
     }else{
-        string* structType = t->type->u.structType;
+        string* structType = t.type->u.structType;
         auto vec = struct2Members[*structType];
 
         string* id;
@@ -612,20 +611,22 @@ aA_type check_MemberExpr(std::ostream *out, aA_memberExpr me)
             case A_varDeclType::A_varDeclArrayKind:
                 id = v->u.declArray->id;
                 if(*id == *memberId){
-                    return v->u.declArray->type;
+                    ty.type = v->u.declArray->type;
+                    ty.len = v->u.declArray->len;
                 }
                 break;
             case A_varDeclType::A_varDeclScalarKind:
                 id = v->u.declScalar->id;
                 if(*id == *memberId){
-                    return v->u.declScalar->type;
+                    ty.type = v->u.declScalar->type;
+                    ty.len = 0;
                 }
                 break;
             }
         }
-        error_print(out, me->pos,"Struct '" + *structType +"' doesn't have the member '"+ *memberId +"'.");
+        if(ty.type == nullptr) error_print(out, me->pos,"Struct '" + *structType +"' doesn't have the member '"+ *memberId +"'.");
     }
-    return nullptr;
+    return ty;
 }
 
 void check_IfStmt(std::ostream *out, aA_ifStmt is)
@@ -797,15 +798,14 @@ t_type check_ExprUnit(std::ostream *out, aA_exprUnit eu)
     case A_exprUnitType::A_arrayExprKind:
     {
         /* write your code here */
-        string* id = eu->u.arrayExpr->arr;
-        auto t = getTtype(*id);
-        if(t == nullptr){
-            error_print(out, eu->pos, "Array '" + *id + "' undefined.");
-        }else if(t->len == 0){
-            error_print(out, eu->pos, "Variable '" + *id + "' is not an array.");
+        auto t = check_leftVal(out, eu->u.arrayExpr->arr);
+        if(t.type == nullptr){
+            error_print(out, eu->pos, "Array is undefined.");
+        }else if(t.len == 0){
+            error_print(out, eu->pos, "Variable is not an array.");
         } else{
             check_ArrayExpr(out, eu->u.arrayExpr);
-            ret = *t;
+            ret.type = t.type;
             ret.len = 0;
         }
     }
@@ -813,7 +813,7 @@ t_type check_ExprUnit(std::ostream *out, aA_exprUnit eu)
     case A_exprUnitType::A_memberExprKind:
     {
         // todo
-        ret.type = check_MemberExpr(out, eu->u.memberExpr);
+        ret = check_MemberExpr(out, eu->u.memberExpr);
         if(ret.type == nullptr) ret.len = -1;
         else ret.len = 0;
     }

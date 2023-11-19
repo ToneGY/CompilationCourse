@@ -157,10 +157,10 @@ indexExpr
 	| NUM { $$ = A_NumIndexExpr($1->pos, $1->u.num); }
 
 arrayExpr 
-	: ID '[' indexExpr ']' { $$ = A_ArrayExpr($1->pos, $1->u.id, $3); }	
+	: leftVal '[' indexExpr ']' { $$ = A_ArrayExpr($1->pos, $1->u.id, $3); }	
 
 memberExpr 
-	: ID '.' ID { $$ = A_MemberExpr($1->pos, $1->u.id, $3->u.id); }
+	: leftVal '.' ID { $$ = A_MemberExpr($1->pos, $1->u.id, $3->u.id); }
 
 leftVal 
 	: ID  { $$ = A_IdExprLVal($1->pos, $1->u.id); }
@@ -296,7 +296,9 @@ ifStmt : IF '(' boolExpr ')' codeBlock elseStmt { $$ = A_IfStmt($1, $3, $5, $6);
 
 whileStmt : WHILE '(' boolExpr ')' codeBlock { $$ = A_WhileStmt($1, $3, $5); }
 
-returnStmt : RET rightVal ';' { $$ = A_ReturnStmt($1, $2); }
+returnStmt 
+	: RET rightVal ';' { $$ = A_ReturnStmt($1, $2); }
+	| RET ';' { $$ = NULL }
 %%
 
 extern "C"{

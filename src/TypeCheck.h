@@ -55,8 +55,8 @@ void check_FnDeclStmt(std::ostream* out, aA_fnDeclStmt fd);
 void check_FnDef(std::ostream* out, aA_fnDef fd);
 void check_CodeblockStmt(std::ostream* out, aA_codeBlockStmt cs);
 void check_AssignStmt(std::ostream* out, aA_assignStmt as);
-void check_ArrayExpr(std::ostream* out, aA_arrayExpr ae);
-aA_type check_MemberExpr(std::ostream* out, aA_memberExpr me);
+aA_type check_ArrayExpr(std::ostream* out, aA_arrayExpr ae);
+t_type check_MemberExpr(std::ostream* out, aA_memberExpr me);
 void check_IfStmt(std::ostream* out, aA_ifStmt is);
 void check_BoolExpr(std::ostream* out, aA_boolExpr be);
 void check_BoolUnit(std::ostream* out, aA_boolUnit bu);
@@ -67,6 +67,7 @@ void check_CallStmt(std::ostream* out, aA_callStmt cs);
 void check_ReturnStmt(std::ostream* out, aA_returnStmt rs);
 
 string get_TypeString(aA_type t);
+t_type check_leftVal(std::ostream* out, aA_leftVal lv, bool first);
 void check_rightVal(std::ostream *out, t_type leftVal, aA_rightVal rv, bool fnCall, bool isRet = false);
 t_type check_ArithExpr(std::ostream* out, aA_arithExpr ae);
 
