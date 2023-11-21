@@ -50,15 +50,42 @@ void print_token_map(typeMap *map)
 // This is the entrace of this file.
 void check_Prog(std::ostream *out, aA_program p)
 {
-    // p is the root of AST tree.
-    /*
-    Write your code here.
+    aA_type_ intType;
+    intType.pos = nullptr;
+    intType.type = A_dataType::A_nativeTypeKind;
+    intType.u.nativeType = A_nativeType::A_intTypeKind;
 
-    Hint:
-    1. Design the order of checking the program elements to meet the requirements that funtion declaration and global variable declaration can be used anywhere in the program.
+    aA_varDecl_ intVarDecl;
+    intVarDecl.kind = A_varDeclType::A_varDeclScalarKind;
+    intVarDecl.pos = nullptr;
+    aA_varDeclScalar_ intVarDeclScalar;
+    intVarDeclScalar.id = nullptr;
+    intVarDeclScalar.type = &intType;
+    intVarDecl.u.declScalar = &intVarDeclScalar;
 
-    2. Many types of statements indeed collapse to some same units, so a good abstract design will help you reduce the amount of your code.
-    */
+    aA_varDecl_ intVarArrayDecl;
+    intVarArrayDecl.kind = A_varDeclType::A_varDeclArrayKind;
+    intVarArrayDecl.pos = nullptr;
+    aA_varDeclArray_ intVarDeclArray;
+    intVarDeclArray.id = nullptr;
+    intVarDeclArray.type = &intType;
+    intVarDeclArray.len = 1;
+    intVarArrayDecl.u.declArray = &intVarDeclArray;
+
+    vector<aA_varDecl> param1;
+    vector<aA_varDecl> param2;
+    vector<aA_varDecl> param3;
+    param1.push_back(&intVarDecl);
+    func2Param.emplace("_sysy_starttime", fun_type(nullptr, &param1, &intType, true));
+    func2Param.emplace("_sysy_stoptime", fun_type(nullptr, &param1, &intType, true));
+    func2Param.emplace("putch", fun_type(nullptr, &param1, nullptr, true));
+    func2Param.emplace("putint", fun_type(nullptr, &param1, nullptr, true));
+    func2Param.emplace("getint", fun_type(nullptr, &param2, &intType, true));
+    func2Param.emplace("getch", fun_type(nullptr, &param2, &intType, true));
+    param3.push_back(&intVarArrayDecl);
+    func2Param.emplace("putarray", fun_type(nullptr, &param3, nullptr, true));
+
+
     NUM_ATYPE.type = A_dataType::A_nativeTypeKind;
     NUM_ATYPE.u.nativeType = A_nativeType::A_intTypeKind;
     for (auto ele : p->programElements)
@@ -354,6 +381,7 @@ void check_FnDef(std::ostream *out, aA_fnDef fd)
         Hint: you may pay attention to the function parameters, local variables and global variables.
     */
     curFunc = fd->fnDecl->id;
+    std::cout << *curFunc<<std::endl;
     fun_type ft = func2Param.find(*curFunc)->second;
     for(auto token : *ft.params){
         string* id;
@@ -439,9 +467,9 @@ void check_rightVal(std::ostream *out, t_type leftVal, aA_rightVal rv, bool fnCa
         if(rightType.len < 0) break;
         t1 = get_TypeString(leftVal.type);
         t2 = get_TypeString(rightType.type);
-        if(t1 != t2 || leftVal.len!=rightType.len){
-            if(leftVal.len > 0) t1+="["+std::to_string(leftVal.len)+"]";
-            if(rightType.len > 0) t2+="["+std::to_string(rightType.len)+"]";
+        if(t1 != t2 || (leftVal.len == 0 && rightType.len > 0) || (leftVal.len > 0 && rightType.len == 0)){
+            if(leftVal.len > 0) t1+="[]";
+            if(rightType.len > 0) t2+="[]";
             error_print(out, rv->pos, "You cannot assign a right value of type '" + t2 + "' to a " + str + " of type '"+ t1 +"'.");
         }
         break;
@@ -857,18 +885,20 @@ void check_FuncCall(std::ostream *out, aA_fnCall fc)
     if(len != curlen){
         error_print(out, fc->pos, "Function '" + *id + "' has " + std::to_string(len) + " parameters, but function call give " + std::to_string(curlen) +" parameters.");
     }else {
+            std::cout << *id << std::endl;
 
         for(int i = 0; i < len; i++){
             aA_varDecl para = ft_->second.params->at(i);
             aA_varDeclStmt_ vds;
             vds.kind = A_varDeclStmtType::A_varDeclKind;
             vds.u.varDecl = para;
+
             string* id = nullptr;
             t_type type1 = varDecl2Ttype(out, id, &vds);
             aA_rightVal value = fc->vals.at(i);
-
             check_rightVal(out, type1, value, true);
         }
+
     }
 
     return;

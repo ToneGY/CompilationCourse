@@ -40,7 +40,7 @@ extern int line, col;
 <INITIAL>"int"    { yylval.key=A_Pos(line,col); col+=yyleng; return INT; }
 <INITIAL>"struct" { yylval.key=A_Pos(line,col); col+=yyleng; return STRUCT; }
 <INITIAL>"fn"     { yylval.key=A_Pos(line,col); col+=yyleng; return FN; }
-<INITIAL>"ret"    { yylval.key=A_Pos(line,col); col+=yyleng; return RET; }
+<INITIAL>"ret"    { yylval.key=A_Pos(line,col); col+=yyleng; return RETURN; }
 <INITIAL>"if"     { yylval.key=A_Pos(line,col); col+=yyleng; return IF; }
 <INITIAL>"else"   { yylval.key=A_Pos(line,col); col+=yyleng; return ELSE; }
 <INITIAL>"while"  { yylval.key=A_Pos(line,col); col+=yyleng; return WHILE; }
@@ -60,7 +60,7 @@ extern int line, col;
     return c; 
 }
 
-<INITIAL>[a-zA-Z][a-zA-Z0-9]* {
+<INITIAL>[a-zA-Z_][a-zA-Z0-9_]* {
     char* p = (char*)malloc(strlen(yytext) + 1);
     if (!p) {
         fprintf(stderr,"\nout of memory!\n");

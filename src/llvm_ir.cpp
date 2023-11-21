@@ -39,6 +39,12 @@ L_def* LLVMIR::L_Globaldef(const std::string &name,TempDef def, const std::vecto
     return p;
 }
 
+
+
+
+
+
+
 LLVMIR::L_binop::L_binop(L_binopKind _op,AS_operand* _left,AS_operand *_right,AS_operand *_dst)
     : op(_op), left(_left), right(_right), dst(_dst) {}
 
@@ -76,10 +82,19 @@ LLVMIR::L_phi::L_phi(AS_operand *_dst,const std::vector<std::pair<AS_operand*,Te
     : dst(_dst), phis(_phis) {}
 
 LLVMIR::L_alloca::L_alloca(AS_operand *_dst)
-    : dst(_dst) {}
+    : dst(_dst) {
+        
+    }
 
 LLVMIR::L_gep::L_gep(AS_operand *_new_ptr,AS_operand *_base_ptr,AS_operand *_index)
     : new_ptr(_new_ptr), base_ptr(_base_ptr), index(_index) {}
+
+
+
+
+
+
+
 
 L_stm* LLVMIR::L_Binop(L_binopKind op,AS_operand* left,AS_operand *right,AS_operand *dst)
 {
@@ -192,6 +207,11 @@ L_stm* LLVMIR::L_Gep(AS_operand *new_ptr,AS_operand *base_ptr,AS_operand *index)
     p->u.GEP = new L_gep(new_ptr,base_ptr,index);
     return p;
 }
+
+
+
+
+
 
 LLVMIR::L_block::L_block(Temp_label *_label,const std::unordered_set<Temp_label*> &_succs,const std::list<L_stm*> &_instrs)
     : label(_label), succs(_succs), instrs(_instrs) {}

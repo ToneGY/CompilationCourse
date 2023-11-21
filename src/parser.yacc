@@ -71,7 +71,7 @@ extern int  yywrap();
 
 %token <token> OP_ADD OP_SUB OP_MUL OP_DIV OP_LT OP_LE OP_GT OP_GE OP_EQ OP_NE OP_OR OP_AND '(' ')' '=' ',' ';' '{' '}' '.' '!' '[' ']' ':' RET_ARROW
 
-%token <key> LET INT STRUCT IF ELSE WHILE RET FN CONTINUE BREAK
+%token <key> LET INT STRUCT IF ELSE WHILE RETURN FN CONTINUE BREAK
 
 %token <expr> ID NUM
 
@@ -157,10 +157,10 @@ indexExpr
 	| NUM { $$ = A_NumIndexExpr($1->pos, $1->u.num); }
 
 arrayExpr 
-	: leftVal '[' indexExpr ']' { $$ = A_ArrayExpr($1->pos, $1->u.id, $3); }	
+	: leftVal '[' indexExpr ']' { $$ = A_ArrayExpr($1->pos, $1, $3); }	
 
 memberExpr 
-	: leftVal '.' ID { $$ = A_MemberExpr($1->pos, $1->u.id, $3->u.id); }
+	: leftVal '.' ID { $$ = A_MemberExpr($1->pos, $1, $3->u.id); }
 
 leftVal 
 	: ID  { $$ = A_IdExprLVal($1->pos, $1->u.id); }
@@ -195,16 +195,16 @@ fnCall : ID '(' rightValList')' { $$ = A_FnCall($1->pos, $1->u.id, $3); }
 boolBiOpExpr 
 	: boolExpr boolBiOp boolExpr { $$ = A_BoolBiOpExpr($1->pos, $2, $1, $3); }
 
-boolExpr : boolBiOpExpr { $$ = A_BoolBiOp_Expr($1->pos, $1); }
-	| boolUnit { $$ = A_BoolExpr($1->pos, $1); }
+boolExpr : boolUnit { $$ = A_BoolExpr($1->pos, $1); }
+	| boolBiOpExpr { $$ = A_BoolBiOp_Expr($1->pos, $1); }
 
 comExpr : exprUnit comOp exprUnit { $$ = A_ComExpr($1->pos, $2, $1, $3); }
 
 boolUOpExpr : '!' boolUnit { $$ = A_BoolUOpExpr($1, A_not, $2); }
 
 boolUnit : comExpr { $$ = A_ComExprUnit($1->pos, $1); }
-	| boolExpr { $$ = A_BoolExprUnit($1->pos, $1); }
 	| boolUOpExpr { $$ = A_BoolUOpExprUnit($1->pos, $1); }
+	| boolExpr { $$ = A_BoolExprUnit($1->pos, $1); }
 
 boolBiOp 
 	: OP_AND { $$ = A_and; }
@@ -297,8 +297,8 @@ ifStmt : IF '(' boolExpr ')' codeBlock elseStmt { $$ = A_IfStmt($1, $3, $5, $6);
 whileStmt : WHILE '(' boolExpr ')' codeBlock { $$ = A_WhileStmt($1, $3, $5); }
 
 returnStmt 
-	: RET rightVal ';' { $$ = A_ReturnStmt($1, $2); }
-	| RET ';' { $$ = NULL }
+	: RETURN rightVal ';' { $$ = A_ReturnStmt($1, $2); }
+	| RETURN ';' { $$ = NULL; }
 %%
 
 extern "C"{

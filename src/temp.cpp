@@ -36,6 +36,11 @@ static int labels = 1;
 Temp_label::Temp_label(string _name)
     : name(_name) {}
 
+
+
+
+
+
 Temp_label* Temp_newlabel()
 {
     return new Temp_label("bb" + to_string(labels++));
@@ -46,8 +51,11 @@ Temp_label* Temp_newlabel_named(const string &name)
     return new Temp_label(name);
 }
 
+
 Name_name::Name_name(Temp_label *_name,TempType _type,int _len,const std::string &_structname)
     : name(_name),type(_type),len(_len),structname(_structname) {}
+
+
 
 Name_name *Name_newname_int(Temp_label *name)
 {

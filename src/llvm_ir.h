@@ -66,7 +66,9 @@ struct L_def
 };
 
 L_def* L_Structdef(const std::string &name,const std::vector<TempDef> &members);
+
 L_def* L_Funcdecl(const std::string &name,const std::vector<TempDef> &args,FuncType ret);
+
 L_def* L_Globaldef(const std::string &name,TempDef def, const std::vector<int> &init);
 
 enum class L_binopKind
@@ -205,19 +207,33 @@ struct L_stm
     } u;
 };
 
+// 四则运算
 L_stm* L_Binop(L_binopKind op,AS_operand* left,AS_operand *right,AS_operand *dst);
+// 加载
 L_stm* L_Load(AS_operand *dst,AS_operand *ptr);
+// 存储
 L_stm* L_Store(AS_operand *src,AS_operand *ptr);
+// 加载标签
 L_stm* L_Label(Temp_label *label);
+// 跳转到标签
 L_stm* L_Jump(Temp_label *jump);
+// 获取两个数的相对关系
 L_stm* L_Cmp(L_relopKind op,AS_operand *left,AS_operand *right,AS_operand *dst);
+// 条件跳转
 L_stm* L_Cjump(AS_operand *dst,Temp_label *true_label,Temp_label *false_label);
+// 移动
 L_stm* L_Move(AS_operand *src,AS_operand *dst);
+// 有返回的函数调用
 L_stm* L_Call(const std::string &fun,AS_operand *res,const std::vector<AS_operand*> &args);
+// 无返回的函数调用
 L_stm* L_Voidcall(const std::string &fun,const std::vector<AS_operand*> &args);
+// 函数返回
 L_stm* L_Ret(AS_operand *ret);
+// phi语句
 L_stm* L_Phi(AS_operand *dst,const std::vector<std::pair<AS_operand*,Temp_label*>> &phis);
+// 分配地址，自动释放
 L_stm* L_Alloca(AS_operand *dst);
+// 获取元素指针地址
 L_stm* L_Gep(AS_operand *new_ptr,AS_operand *base_ptr,AS_operand *index);
 
 struct L_block
