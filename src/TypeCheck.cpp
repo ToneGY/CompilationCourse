@@ -50,6 +50,8 @@ void print_token_map(typeMap *map)
 // This is the entrace of this file.
 void check_Prog(std::ostream *out, aA_program p)
 {
+    std::cout << "????\n";
+
     aA_type_ intType;
     intType.pos = nullptr;
     intType.type = A_dataType::A_nativeTypeKind;
@@ -82,6 +84,7 @@ void check_Prog(std::ostream *out, aA_program p)
     func2Param.emplace("putint", fun_type(nullptr, &param1, nullptr, true));
     func2Param.emplace("getint", fun_type(nullptr, &param2, &intType, true));
     func2Param.emplace("getch", fun_type(nullptr, &param2, &intType, true));
+    param3.push_back(&intVarDecl);
     param3.push_back(&intVarArrayDecl);
     func2Param.emplace("putarray", fun_type(nullptr, &param3, nullptr, true));
 
@@ -479,8 +482,6 @@ void check_rightVal(std::ostream *out, t_type leftVal, aA_rightVal rv, bool fnCa
         if(t1 != "int" && t1 != "bool" || leftVal.len > 0){
             if(leftVal.len > 0) t1+="["+std::to_string(leftVal.len)+"]";
             error_print(out, rv->pos, "You cannot assign a right value of type 'bool' to a " + str + " of type '"+ t1 +"'.");
-        }else{
-            error_print(out, rv->pos, "Warning: Boolean type as right value may not be legal.");
         }
         break;
     default:
@@ -509,6 +510,7 @@ t_type check_leftVal(std::ostream* out, aA_leftVal lv, bool first = false){
         break;
         case A_leftValType::A_arrValKind:
         {
+
             type.type = check_ArrayExpr(out, lv->u.arrExpr);
             type.len = 0;
         }
@@ -590,7 +592,7 @@ aA_type check_ArrayExpr(std::ostream *out, aA_arrayExpr ae)
 
     if(ae->idx->kind == A_indexExprKind::A_numIndexKind){
         int idx = ae->idx->u.num;
-        if(t.len > idx || idx < 0){
+        if(idx > t.len || idx < 0){
             error_print(out, ae->pos, "array out of index.");
             return nullptr;
         }
@@ -885,8 +887,6 @@ void check_FuncCall(std::ostream *out, aA_fnCall fc)
     if(len != curlen){
         error_print(out, fc->pos, "Function '" + *id + "' has " + std::to_string(len) + " parameters, but function call give " + std::to_string(curlen) +" parameters.");
     }else {
-            std::cout << *id << std::endl;
-
         for(int i = 0; i < len; i++){
             aA_varDecl para = ft_->second.params->at(i);
             aA_varDeclStmt_ vds;

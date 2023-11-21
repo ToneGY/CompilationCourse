@@ -2,7 +2,8 @@
 func_testcase_dir=$(realpath $(dirname "$0")/./tests)
 
 test_single() {
-	test_file=`realpath --relative-base=$func_testcase_dir $func_testcase_dir/$1.tea`	
+	# test_file=`realpath --relative-base=$func_testcase_dir $func_testcase_dir/1.tea`	
+	test_file=`realpath --relative-base=$func_testcase_dir $func_testcase_dir/test07.tea`	
 	test_name=${test_file%.tea}
 	
 	echo -n $test_name
@@ -17,9 +18,9 @@ test_single() {
 		echo "fail to link"; exit -1
 	fi
 	if [ -f $func_testcase_dir/$test_name.in ]; then
-    	lli ./output/$test_name.ll < $func_testcase_dir/$test_name.in > output/$test_name.out
+    	lli-17 ./output/$test_name.ll < $func_testcase_dir/$test_name.in > output/$test_name.out
 	else
-    	lli ./output/$test_name.ll > ./output/$test_name.out
+    	lli-17 ./output/$test_name.ll > ./output/$test_name.out
 	fi
 	echo -e $? >> ./output/$test_name.out
 	diff -Bb ./output/$test_name.out $func_testcase_dir/$test_name.out > /dev/null 2>/dev/null

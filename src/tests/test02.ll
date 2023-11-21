@@ -10,31 +10,31 @@ declare void @_sysy_stoptime( i32 )
 @e = global [ 10 x %Node ] zeroinitializer
 define void @foo( %Node* %r100 ) {
 bb1:
-  %r101 = call i32 @getint()
-  %r102 = getelementptr %Node, %Node* %r100, i32 0, i32 0
-  store i32 %r101, i32* %r102
-  %r103 = call i32 @getint()
-  %r104 = getelementptr %Node, %Node* %r100, i32 0, i32 1
-  store i32 %r103, i32* %r104
+  %r101 = getelementptr %Node, %Node* %r100, i32 0, i32 0
+  %r102 = call i32 @getint()
+  store i32 %r102, i32* %r101
+  %r103 = getelementptr %Node, %Node* %r100, i32 0, i32 1
+  %r104 = call i32 @getint()
+  store i32 %r104, i32* %r103
   ret void
 }
 
 define void @baz( %Node* %r105 ) {
 bb2:
-  %r106 = call i32 @getint()
-  %r107 = getelementptr %Node, %Node* %r105, i32 2
-  %r108 = getelementptr %Node, %Node* %r107, i32 0, i32 0
-  store i32 %r106, i32* %r108
-  %r109 = call i32 @getint()
-  %r110 = getelementptr %Node, %Node* %r105, i32 2
-  %r111 = getelementptr %Node, %Node* %r110, i32 0, i32 1
-  store i32 %r109, i32* %r111
+  %r106 = getelementptr %Node, %Node* %r105, i32 2
+  %r107 = getelementptr %Node, %Node* %r106, i32 0, i32 0
+  %r108 = call i32 @getint()
+  store i32 %r108, i32* %r107
+  %r109 = getelementptr %Node, %Node* %r105, i32 2
+  %r110 = getelementptr %Node, %Node* %r109, i32 0, i32 1
+  %r111 = call i32 @getint()
+  store i32 %r111, i32* %r110
   ret void
 }
 
 define i32 @main( ) {
 bb3:
-  call void @_sysy_starttime(i32 13)
+  call void @_sysy_starttime(i32 22)
   %r112 = alloca %Node
   %r113 = getelementptr %Node, %Node* %r112, i32 0, i32 0
   store i32 1, i32* %r113
@@ -63,7 +63,7 @@ bb3:
   %r130 = load i32, i32* %r129
   %r131 = add i32 %r127, %r130
   call void @putint(i32 %r131)
-  call void @_sysy_stoptime(i32 19)
+  call void @_sysy_stoptime(i32 32)
   ret i32 0
 }
 

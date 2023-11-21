@@ -406,9 +406,11 @@ void LLVMIR::printL_stm(std::ostream &os,LLVMIR::L_stm *stm)
     {
         os << "  ";
         printL_oper(os,stm->u.GEP->new_ptr);
+
         os << " = getelementptr ";
         if(stm->u.GEP->base_ptr->kind == OperandKind::TEMP)
         {
+
             switch (stm->u.GEP->base_ptr->u.TEMP->type)
             {
             case TempType::INT_TEMP:
@@ -439,6 +441,8 @@ void LLVMIR::printL_stm(std::ostream &os,LLVMIR::L_stm *stm)
             }
             case TempType::STRUCT_PTR:
             {
+                std::cout <<"--"<<std::endl;
+
                 if(stm->u.GEP->base_ptr->u.TEMP->len == 0)
                 {
                     os << "%" << stm->u.GEP->base_ptr->u.TEMP->structname << ", %" << stm->u.GEP->base_ptr->u.TEMP->structname << "* ";
@@ -526,6 +530,7 @@ void LLVMIR::printL_stm(std::ostream &os,LLVMIR::L_stm *stm)
         }
         break;
     }
+    
     case L_StmKind::T_JUMP:
     {
         os << "  br label %" << stm->u.JUMP->jump->name << "\n";
@@ -665,11 +670,13 @@ void LLVMIR::printL_stm(std::ostream &os,LLVMIR::L_stm *stm)
     default:
         break;
     }
+
     os << "\n";
 }
 
 void LLVMIR::printL_oper(std::ostream &os,AS_operand *oper)
 {
+
     switch (oper->kind)
     {
     case OperandKind::ICONST:
@@ -707,6 +714,7 @@ void LLVMIR::printL_prog(std::ostream &os,LLVMIR::L_prog *prog)
 void LLVMIR::printL_func(std::ostream &os,LLVMIR::L_func *func)
 {
     os << "define ";
+
     switch (func->ret.type)
     {
     case ReturnType::VOID_TYPE:
@@ -727,6 +735,8 @@ void LLVMIR::printL_func(std::ostream &os,LLVMIR::L_func *func)
     default:
         break;
     }
+
+
     os << "@" << func->name << "(";
     bool first = true;
     for(const auto &v : func->args)
@@ -766,11 +776,19 @@ void LLVMIR::printL_func(std::ostream &os,LLVMIR::L_func *func)
             break;
         }
     }
+
+    std::cout << "###FUNC3\n";
+
     os << " ) {\n";
     for(const auto &b : func->blocks)
     {
+        std::cout << "###BLCOK\n";
         printL_block(os,b);
+        std::cout << "###_____BLCOK\n";
     }
+
+    std::cout << "###FUNC4\n";
+
     os << "}\n\n";
 }
 
@@ -778,6 +796,8 @@ void LLVMIR::printL_block(std::ostream &os,LLVMIR::L_block *block)
 {
     for(const auto &ir : block->instrs)
     {
+        std::cout << "###STM\n";
         printL_stm(os,ir);
+        std::cout << "###____STM\n";
     }
 }

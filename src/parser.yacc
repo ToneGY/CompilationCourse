@@ -205,6 +205,9 @@ boolUOpExpr : '!' boolUnit { $$ = A_BoolUOpExpr($1, A_not, $2); }
 boolUnit : comExpr { $$ = A_ComExprUnit($1->pos, $1); }
 	| boolUOpExpr { $$ = A_BoolUOpExprUnit($1->pos, $1); }
 	| boolExpr { $$ = A_BoolExprUnit($1->pos, $1); }
+	| '(' comExpr ')' { $$ = A_ComExprUnit($2->pos, $2); }
+	| '(' boolUOpExpr ')' { $$ = A_BoolUOpExprUnit($2->pos, $2); }
+	| '(' boolExpr ')' { $$ = A_BoolExprUnit($2->pos, $2); }
 
 boolBiOp 
 	: OP_AND { $$ = A_and; }
@@ -297,8 +300,8 @@ ifStmt : IF '(' boolExpr ')' codeBlock elseStmt { $$ = A_IfStmt($1, $3, $5, $6);
 whileStmt : WHILE '(' boolExpr ')' codeBlock { $$ = A_WhileStmt($1, $3, $5); }
 
 returnStmt 
-	: RETURN rightVal ';' { $$ = A_ReturnStmt($1, $2); }
-	| RETURN ';' { $$ = NULL; }
+	: RETURN ';' {  $$ = A_ReturnStmt($1, NULL); }
+	| RETURN rightVal ';' { $$ = A_ReturnStmt($1, $2); }
 %%
 
 extern "C"{

@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
-
+#include <iostream>
 using namespace std;
 using namespace LLVMIR;
 
