@@ -441,7 +441,6 @@ void LLVMIR::printL_stm(std::ostream &os,LLVMIR::L_stm *stm)
             }
             case TempType::STRUCT_PTR:
             {
-                std::cout <<"--"<<std::endl;
 
                 if(stm->u.GEP->base_ptr->u.TEMP->len == 0)
                 {
@@ -777,17 +776,13 @@ void LLVMIR::printL_func(std::ostream &os,LLVMIR::L_func *func)
         }
     }
 
-    std::cout << "###FUNC3\n";
 
     os << " ) {\n";
     for(const auto &b : func->blocks)
     {
-        std::cout << "###BLCOK\n";
         printL_block(os,b);
-        std::cout << "###_____BLCOK\n";
     }
 
-    std::cout << "###FUNC4\n";
 
     os << "}\n\n";
 }
@@ -796,8 +791,6 @@ void LLVMIR::printL_block(std::ostream &os,LLVMIR::L_block *block)
 {
     for(const auto &ir : block->instrs)
     {
-        std::cout << "###STM\n";
         printL_stm(os,ir);
-        std::cout << "###____STM\n";
     }
 }

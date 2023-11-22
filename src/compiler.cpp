@@ -56,7 +56,6 @@ int main(int argc, char * argv[]) {
     ofstream LLVMStream;
     LLVMStream.open(file_name + ".ll");
     auto prog = ast2llvm(aroot);
-    std::cout<<"DONE_\n";
     printL_prog(LLVMStream,prog);
     LLVMStream.close();
 

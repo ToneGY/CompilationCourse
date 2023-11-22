@@ -51,13 +51,10 @@ string stmKind2String(L_StmKind sk){
 
 LLVMIR::L_prog* ast2llvm(aA_program p)
 {
-    printf("WE ARE IN\n");
     auto defs = ast2llvmProg_first(p);
-    printf("first DONE\n");
 
     auto funcs = ast2llvmProg_second(p);
     
-    printf("second DONE\n");
 
     vector<L_func*> funcs_block;
     for(const auto &f : funcs)
@@ -307,7 +304,6 @@ std::vector<LLVMIR::L_def*> ast2llvmProg_first(aA_program p)
 
     defs.push_back(L_Funcdecl("_sysy_starttime",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
     defs.push_back(L_Funcdecl("_sysy_stoptime",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
-    printf("Traverse FIRST\n");
     for(const auto &v : p->programElements)
     {
         switch (v->kind)
@@ -575,7 +571,6 @@ std::vector<Func_local*> ast2llvmProg_second(aA_program p)
         if(v->kind == A_programElementType::A_programFnDefKind){
             emit_irs.clear();
             localVarMap.clear();
-            std::cout << *v->u.fnDef->fnDecl->id<<"======"<< std::endl;
             Func_local* fl = ast2llvmFunc(v->u.fnDef);
             flv.push_back(fl);
         }
@@ -771,25 +766,25 @@ void ast2llvmBlock(aA_codeBlockStmt b,Temp_label *con_label,Temp_label *bre_labe
     switch(b->kind){
         case A_codeBlockStmtType::A_assignStmtKind:
         {
-            std::cout << "A_assignStmtKind\n";
+            // std::cout << "A_assignStmtKind\n";
             auto v = b->u.assignStmt;
             AS_operand* aol = ast2llvmLeftVal(v->leftVal);
             AS_operand* aor = ast2llvmRightVal(v->rightVal);
             emit_irs.emplace_back(L_Store(aor, aol));
-            std::cout << "A_assignStmtKind_done\n";
+            // std::cout << "A_assignStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_varDeclStmtKind:
         { 
-            std::cout << "A_varDeclStmtKind\n";
+            // std::cout << "A_varDeclStmtKind\n";
             aA_varDeclStmt v = b->u.varDeclStmt;
             vds2tt(v);
-            std::cout << "A_varDeclStmtKind_done\n";
+            // std::cout << "A_varDeclStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_ifStmtKind:
         {
-            std::cout << "A_ifStmtKind\n";
+            // std::cout << "A_ifStmtKind\n";
             Temp_label* trueLabel = Temp_newlabel();
             Temp_label* falseLabel = Temp_newlabel();
             Temp_label* endLabel = Temp_newlabel();
@@ -808,12 +803,12 @@ void ast2llvmBlock(aA_codeBlockStmt b,Temp_label *con_label,Temp_label *bre_labe
             emit_irs.emplace_back(L_Jump(endLabel));
 
             emit_irs.emplace_back(L_Label(endLabel));
-            std::cout << "A_ifStmtKind_done\n";
+            // std::cout << "A_ifStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_whileStmtKind:
         {
-            std::cout << "A_whileStmtKind\n";
+            // std::cout << "A_whileStmtKind\n";
             Temp_label* conLabel = Temp_newlabel();
             Temp_label* whiLabel = Temp_newlabel();
             Temp_label* breLabel = Temp_newlabel();
@@ -831,28 +826,28 @@ void ast2llvmBlock(aA_codeBlockStmt b,Temp_label *con_label,Temp_label *bre_labe
             emit_irs.emplace_back(L_Jump(conLabel)); 
 
             emit_irs.emplace_back(L_Label(breLabel));
-            std::cout << "A_whileStmtKind_done\n";
+            // std::cout << "A_whileStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_breakStmtKind:
         {         
-            std::cout << "A_breakStmtKind\n";
+            // std::cout << "A_breakStmtKind\n";
             assert(con_label != nullptr && bre_label != nullptr);
             emit_irs.emplace_back(L_Jump(bre_label));
-            std::cout << "A_breakStmtKind_done\n";
+            // std::cout << "A_breakStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_continueStmtKind:
         {
-            std::cout << "A_continueStmtKind\n";
+            // std::cout << "A_continueStmtKind\n";
             assert(con_label != nullptr && bre_label != nullptr);
             emit_irs.emplace_back(L_Jump(con_label));
-            std::cout << "A_continueStmtKind_done\n";
+            // std::cout << "A_continueStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_callStmtKind:
         {
-            std::cout << "A_callStmtKind\n";
+            // std::cout << "A_callStmtKind\n";
             aA_fnCall fc = b->u.callStmt->fnCall;
             string fn = *fc->fn;
 
@@ -860,18 +855,18 @@ void ast2llvmBlock(aA_codeBlockStmt b,Temp_label *con_label,Temp_label *bre_labe
             for(auto v: fc->vals) aov.push_back(ast2llvmRightVal(v));
 
             emit_irs.emplace_back(L_Voidcall(fn, aov));
-            std::cout << "A_callStmtKind_done\n";
+            // std::cout << "A_callStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_returnStmtKind:
         {
-            std::cout << "A_returnStmtKind\n";
+            // std::cout << "A_returnStmtKind\n";
             AS_operand* ao = nullptr;
             if(b->u.returnStmt->retVal != nullptr){
                 ao = ast2llvmRightVal(b->u.returnStmt->retVal);
             }
             emit_irs.emplace_back(L_Ret(ao));
-            std::cout << "A_returnStmtKind_done\n";
+            // std::cout << "A_returnStmtKind_done\n";
         }
         break;
         case A_codeBlockStmtType::A_nullStmtKind:
@@ -890,14 +885,13 @@ AS_operand* ast2llvmRightVal(aA_rightVal r)
         Temp_label* back_label = Temp_newlabel();
         AS_operand* ao = ast2llvmBoolExpr(r->u.boolExpr, back_label, nullptr);
         emit_irs.emplace_back(L_Label(back_label));
-        return ao;
+        return getIntOrPtr(ao);
     }
     return nullptr;
 }
 
 
 AS_operand* getIdPtr(string id){
-    std::cout <<"FIND_ID"<<" "+id<<std::endl;
     auto lv = localVarMap.find(id);
     if(lv == localVarMap.end()){
         auto gv = globalVarMap.find(id);
@@ -927,11 +921,9 @@ AS_operand* TempDefnewAS_operand(TempDef td){
 AS_operand* getMemberOff_Type(string structName, string memId, AS_operand*& off){
     auto si = structInfoMap.find(structName);
     assert(si != structInfoMap.end());
-    std::cout << structName <<" "<<memId<<std::endl;
     auto mi = si->second.memberinfos.find(memId);
     assert(mi != si->second.memberinfos.end());
     AS_operand* ao = TempDefnewAS_operand(mi->second.def);
-    std::cout << mi->second.offset<<std::endl;
     off = AS_Operand_Const(mi->second.offset);
     return ao;
 }
@@ -1190,7 +1182,6 @@ AS_operand* ast2llvmExprUnit(aA_exprUnit e)
             vector<AS_operand*> aov;
             for(auto v: fc->vals) aov.push_back(ast2llvmRightVal(v));
 
-            std::cout << "FIND_FN"<<" "+fn<<std::endl;
             auto item = funcReturnMap.find(fn);
             assert(item != funcReturnMap.end());
             if(item->second.type == ReturnType::VOID_TYPE){
@@ -1227,11 +1218,11 @@ LLVMIR::L_func* ast2llvmFuncBlock(Func_local *f)
     std::list<L_stm*> instrs;
     for(L_stm* ir : irs){
         if(ir->type == L_StmKind::T_LABEL){
-            std::cout <<"                "<<"=============="<<std::endl;
+            // std::cout <<"                "<<"=============="<<std::endl;
             if(!instrs.empty()) blocks.push_back(L_Block(instrs));
             instrs.clear();
         }
-        std::cout <<"                "<< stmKind2String(ir->type) <<std::endl;
+        // std::cout <<"                "<< stmKind2String(ir->type) <<std::endl;
         instrs.push_back(ir);
     }
     if(!instrs.empty()) blocks.push_back(L_Block(instrs));
@@ -1241,24 +1232,29 @@ LLVMIR::L_func* ast2llvmFuncBlock(Func_local *f)
 
 void ast2llvm_moveAlloca(LLVMIR::L_func *f)
 {
-    std::unordered_set<L_stm*> set;
+    std::unordered_set<AS_operand*> set;
     std::list<L_block*> blks = f->blocks;
     for(auto b: blks){
         if(b == blks.front()) continue;
+        list<L_stm*> cache;
+
         for(auto inst : b->instrs){
             if(inst->type ==  L_StmKind::T_ALLOCA){
-                set.insert(inst);
-                b->instrs.remove(inst);
+                set.insert(inst->u.ALLOCA->dst);
+                cache.push_back(inst);
             }
         }
+        for(auto c : cache){
+            b->instrs.remove(c);
+        }
     }
-    list<L_stm*> ff = blks.front()->instrs;
+    list<L_stm*>& ff = blks.front()->instrs;
     if(!ff.empty()){
         L_stm* lb = ff.front();
         ff.pop_front();
-        for(L_stm* s: set){
-            ff.emplace_front(s);
+        for(AS_operand* s: set){
+            ff.push_front(L_Alloca(s));
         }
-        ff.emplace_front(lb);
+        ff.push_front(lb);
     }
 }
