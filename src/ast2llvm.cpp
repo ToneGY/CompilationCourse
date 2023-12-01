@@ -682,7 +682,7 @@ void vds2tt(aA_varDeclStmt v){
             if(vdf->kind == A_varDefType::A_varDefScalarKind){
                 aA_varDefScalar vds = vdf->u.defScalar;
                 id = *vds->id;
-                rvs.push_back(vds->val);
+                // rvs.push_back(vds->val);
                 if(vds->type->type == A_dataType::A_nativeTypeKind){
                     tt = Temp_newtemp_int_ptr(0);
                     AS_operand* lv = AS_Operand_Temp(tt);
@@ -696,25 +696,24 @@ void vds2tt(aA_varDeclStmt v){
                 aA_varDefArray vda = vdf->u.defArray;
                 id = *vda->id;
                 rvs = vda->vals;
-                switch(vda->type->type){
-                    case A_dataType::A_nativeTypeKind:
-                        tt = Temp_newtemp_int_ptr(vda->len);
-
-                        break;
-                    case A_dataType::A_structTypeKind:
-                        tt = Temp_newtemp_struct_ptr(vda->len, *vda->type->u.structType);
-                        break;
+                if(vda->type->type == A_dataType::A_nativeTypeKind){
+                    tt = Temp_newtemp_int_ptr(vda->len);
+                    AS_operand* lv = AS_Operand_Temp(tt);
+                    emit_irs.emplace_back(L_Alloca(lv));
+                    for(int i = 0; i < rvs.size(); i++){
+                        AS_operand* new_ptr = AS_Operand_Temp(Temp_newtemp_int_ptr(0));
+                        emit_irs.emplace_back(L_Gep(new_ptr, lv, AS_Operand_Const(i)));
+                        AS_operand* rv = ast2llvmRightVal(rvs[i]);
+                        emit_irs.emplace_back(L_Store(rv, new_ptr));
+                    }
                 }
+                else if(vda->type->type ==  A_dataType::A_structTypeKind)
+                    tt = Temp_newtemp_struct_ptr(vda->len, *vda->type->u.structType);
             }
             localVarMap.emplace(id, tt);
-            // AS_operand* lv = AS_Operand_Temp(tt);
-            // emit_irs.emplace_back(L_Alloca(lv));
-            // for(int i = 0; i < rvs.size(); i++){
-            //     AS_operand* new_ptr;
-            //     emit_irs.emplace_back(L_Gep(new_ptr, lv, AS_Operand_Const(i)));
-            //     AS_operand* rv = ast2llvmRightVal(rvs[i]);
-            //     emit_irs.emplace_back(L_Store(rv, new_ptr));
-            // }
+            if(!rvs.empty()){
+
+            }
     }
 }
 
