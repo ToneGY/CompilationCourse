@@ -262,17 +262,50 @@ void computeDF(GRAPH::Graph<LLVMIR::L_block *> &bg, GRAPH::Node<LLVMIR::L_block 
 // 只对标量做
 void Place_phi_fu(GRAPH::Graph<LLVMIR::L_block *> &bg, L_func *fun) {
     //   Todo
-    map<Temp_temp*, set<int>> defsites;
+    map<Temp_temp*, list<Node<L_block*>*>> defsites;
+    map<Temp_temp*, set<L_block*>> phisites;
 
     for(auto it = bg.mynodes.begin(); it != bg.mynodes.end(); it++){
-        int i = it->first;
+        auto i = it->second;
         TempSet ts = &FG_def(it->second);
         for(auto t: *ts){
-            defsites[t].insert(i);
+            defsites[t].push_back(i);
         }
     }
 
-    
+    for(auto it = defsites.begin(); it != defsites.end(); it++){
+        Temp_temp* var = it->first;
+        list<Node<L_block*>*> nodes = it->second;
+        while(!nodes.empty()){
+            auto n = nodes.front();
+            nodes.pop_front();
+
+            for(auto y : DF_array[n->info]){
+                if(phisites[var].find(y) == phisites[var].end()){
+                    auto insts = y->instrs;
+                    AS_operand* dst = AS_Operand_Temp(Temp_newtemp_int_ptr(0));
+                    NodeSet pred = n->preds;
+                    vector<pair<AS_operand*,Temp_label*>> value;
+                    for(int p : pred){
+                        auto pre_node = bg.mynodes[p];
+                        value.push_back(make_pair(dst, pre_node->info->label));
+                    }
+                    L_stm* stm = L_Phi(dst, value);
+                    insts.push_front(stm);
+
+                    temp2ASoper.emplace(var, dst);
+                    phisites[var].emplace(y);
+                    if(FG_def(n).find(var) == FG_def(n).end()){
+                        nodes.push_back(reinterpret_cast<Node<L_block*>*>(y));
+                    }
+                }
+            }
+
+        }
+
+    }
+
+
 
 }
 
@@ -298,9 +331,82 @@ static list<AS_operand **> get_use_int_operand(LLVMIR::L_stm *stm) {
 
 static void Rename_temp(GRAPH::Graph<LLVMIR::L_block *> &bg, GRAPH::Node<LLVMIR::L_block *> *n,
                         unordered_map<Temp_temp *, stack<Temp_temp *>> &Stack) {
-    //   Todo
+    for(auto stm : n->info->instrs){
+
+        // USE
+        if(stm->type != L_StmKind::T_PHI){
+            list<Temp_temp*> use_list = get_use(stm);
+            for(Temp_temp* l : use_list){
+                if(Stack.find(l) == Stack.end()){
+                    stack<Temp_temp *> s;
+                    s.emplace(l); //!
+                    Stack.emplace(l, s);
+                }
+                l = Stack.at(l).top();//!
+            }
+        }
+
+
+        // DEF
+        list<Temp_temp*> def_list = get_def(stm);
+        for(Temp_temp* d: def_list){
+            if(Stack.find(d) == Stack.end()){
+                stack<Temp_temp *> s;
+                s.emplace(d); //!
+                Stack.emplace(d, s);
+            }else{
+                Stack.at(d).emplace(Temp_newtemp_int_ptr(0));
+            }
+            
+        }
+    }
+
+
+
+    // rename PHI
+    for(auto s : n->succs){
+        auto succ_node = bg.mynodes[s];
+        auto insts = succ_node->info->instrs;
+
+        for(auto stm: insts){
+            if(stm->type == L_StmKind::T_PHI){
+                auto use = get_use(stm).begin();
+                auto preds = succ_node->preds;
+                for(auto k: preds){
+                    if(k == n->mykey){
+                        Temp_temp* t = *use;
+                        if(Stack.find(t) != Stack.end()){
+                            stack<Temp_temp *> s;
+                            s.emplace(t); //!
+                            Stack.emplace(t, s);
+                        }
+                        t = Stack[t].top();
+                        break;
+                    }
+                    use++;
+                }
+            }
+        }
+    }
+
+
+
+    for(auto s : n->succs){
+        Rename_temp(bg, bg.mynodes[s], Stack);
+    }
+
+    for(auto stm: n->info->instrs){
+        for(auto def = get_def(stm).begin(); def != get_def(stm).end(); def++){
+            Stack[*def].pop();
+        }
+    }
 }
 
 void Rename(GRAPH::Graph<LLVMIR::L_block *> &bg) {
     //   Todo
+    unordered_map<Temp_temp *, stack<Temp_temp *>> Stack;
+    for(auto it = bg.mynodes.begin(); it != bg.mynodes.end(); it++){
+        auto node = it->second;
+        Rename_temp(bg, node, Stack);
+    }
 }
