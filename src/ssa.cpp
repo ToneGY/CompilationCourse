@@ -142,13 +142,13 @@ void Dominators(GRAPH::Graph<LLVMIR::L_block *> &bg) {
     }
     for(auto t : bg.mynodes){
         auto node = t.second;
-        dominators.emplace(node, blks);
+        dominators.emplace(node->info, blks);
     }
 
     Node<L_block*>* head = bg.mynodes[0];
     unordered_set<L_block *> dom;
-    dom.emplace(head);
-    dominators.emplace(bg.mynodes[0], dom);
+    dom.emplace(head->info);
+    dominators.emplace(bg.mynodes[0]->info, dom);
 
     bool change = true;
     while(change){

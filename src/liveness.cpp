@@ -235,9 +235,9 @@ TempSet_& FG_use(GRAPH::Node<LLVMIR::L_block*>* r) { return UseDefTable[r].use; 
 static void Use_def(GRAPH::Node<LLVMIR::L_block*>* r, GRAPH::Graph<LLVMIR::L_block*>& bg,
                     std::vector<Temp_temp*>& args) {
     for(auto t = bg.mynodes.begin(); t != bg.mynodes.end(); t++){
-        auto thisBlock = t->second->info;
+        auto thisBlock = t->second;
         useDef usedef;
-        for(auto stm: thisBlock->instrs){
+        for(auto stm: thisBlock->info->instrs){
             list<Temp_temp*> use_list = get_use(stm);
             list<Temp_temp*> def_list = get_def(stm);
             for(auto u : use_list){
@@ -268,9 +268,9 @@ static bool LivenessIteration(GRAPH::Node<LLVMIR::L_block*>* r,
 
         if(!(TempSet_eq(&FG_In(thisNode), in) && TempSet_eq(&FG_Out(thisNode), out))) changed = true;
 
-        inOut* inout = new inOut();
-        inout->in = *in;
-        inout->out = *out;
+        inOut inout;
+        inout.in = *in;
+        inout.out = *out;
         InOutTable.emplace(thisNode, inout);
     }
 
