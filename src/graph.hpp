@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+
 #include <iostream>
 #include <map>
 #include <set>
@@ -42,8 +43,10 @@ struct Node {
 template <typename T>
 class Graph {
    public:
+   
     std::map<int, Node<T>*> mynodes;
     int nodecount;
+
     Graph() {
         nodecount = 0;
         mynodes = std::map<int, Node<T>*>();
@@ -56,8 +59,7 @@ class Graph {
     /* Get the list of nodes belonging to "g" */
     std::map<int, Node<T>*>* nodes();
 
-    /* Make a new edge joining nodes "from" and "to", which must belong
-        to the same graph */
+    /* Make a new edge joining nodes "from" and "to", which must belong to the same graph */
     void addEdge(Node<T>* from, Node<T>* to);
 
     /* Delete the edge joining "from" and "to" */
@@ -125,8 +127,7 @@ void Graph<T>::addEdge(Node<T>* from, Node<T>* to) {
     assert(to);
     assert(from->mygraph == to->mygraph);
 
-    if (goesTo(from, to))
-        return;
+    if (goesTo(from, to)) return;
     to->preds.insert(from->mykey);
     from->succs.insert(to->mykey);
 }

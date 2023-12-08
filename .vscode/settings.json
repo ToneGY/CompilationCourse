@@ -44,6 +44,7 @@
         "typeinfo": "cpp",
         "list": "cpp",
         "unordered_set": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "map": "cpp"
     }
 }

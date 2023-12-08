@@ -234,13 +234,6 @@ void check_StructDef(std::ostream *out, aA_structDef sd)
 {
     if (!sd)
         return;
-    // structure definition
-    // Example:
-    //      struct A{
-    //          a:int;
-    //          b:int;
-    //      }
-    // todo
     string id = *(sd->id);
     bool is_return = false;
 
@@ -304,11 +297,6 @@ void check_FnDecl(std::ostream *out, aA_fnDecl fd)
     //      fn main(a:int, b:int)->int
     if (!fd)
         return;
-    // todo
-    /*
-       write your code here
-       Hint: you may need to check if the function is already eclared
-    */
     auto it = func2Param.find(*(fd->id));
     if (it != func2Param.end()){
         bool isDef = (*it).second.isDef;
@@ -695,7 +683,6 @@ void check_BoolExpr(std::ostream *out, aA_boolExpr be)
     switch (be->kind)
     {
     case A_boolExprType::A_boolBiOpExprKind:
-        // todo
         check_BoolExpr(out, be->u.boolBiOpExpr->left);
         check_BoolExpr(out, be->u.boolBiOpExpr->right);
         break;
@@ -842,7 +829,6 @@ t_type check_ExprUnit(std::ostream *out, aA_exprUnit eu)
     break;
     case A_exprUnitType::A_memberExprKind:
     {
-        // todo
         ret = check_MemberExpr(out, eu->u.memberExpr);
         if(ret.type == nullptr) ret.len = -1;
         else ret.len = 0;
@@ -875,9 +861,6 @@ void check_FuncCall(std::ostream *out, aA_fnCall fc)
 {
     if (!fc)
         return;
-    // Example:
-    //      foo(1, 2);
-    // todo
     string* id = fc->fn;
     auto ft_ = func2Param.find(*id);
     int len = ft_->second.params->size();

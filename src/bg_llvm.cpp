@@ -19,6 +19,7 @@ static unordered_map<Temp_label*, L_block*> block_env;
 Graph<L_block*>& Bg_graph() {
     return RA_bg;
 }
+
 unordered_map<Temp_label*, L_block*>& Bg_block_env() {
     return block_env;
 }
@@ -65,13 +66,29 @@ Graph<L_block*>& Create_bg(list<L_block*>& bl) {
     return RA_bg;
 }
 
+
 // maybe useful
 static void DFS(Node<L_block*>* r, Graph<L_block*>& bg) {
-
+    if(r->color == 1) return;
+    r->color = 1;
+    for(auto i : r->succs){
+        DFS(bg.mynodes[i], bg);
+    }
 }
 
-void SingleSourceGraph(Node<L_block*>* r, Graph<L_block*>& bg,L_func*fun) {
-    //   Todo
+void SingleSourceGraph(Node<L_block*>* r, Graph<L_block*>& bg, L_func*fun) {
+    r->color = 1;
+    DFS(r, bg);
+
+    for (auto it = bg.mynodes.begin(); it != bg.mynodes.end(); ) {
+        Node<L_block*>* r = it->second;
+        if (r->color == 0) {
+            it = bg.mynodes.erase(it); 
+            fun->blocks.remove(r->info); 
+        } else {
+            ++it;
+        }
+    }
 }
 
 void Show_graph(FILE* out,GRAPH::Graph<LLVMIR::L_block*>&bg){
