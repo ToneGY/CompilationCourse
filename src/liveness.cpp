@@ -223,6 +223,8 @@ static void init_INOUT() {
     UseDefTable.clear();
 }
 
+#include <assert.h>
+
 TempSet_& FG_Out(GRAPH::Node<LLVMIR::L_block*>* r) { return InOutTable[r].out; }
 
 TempSet_& FG_In(GRAPH::Node<LLVMIR::L_block*>* r) { return InOutTable[r].in; }
@@ -235,9 +237,9 @@ TempSet_& FG_use(GRAPH::Node<LLVMIR::L_block*>* r) { return UseDefTable[r].use; 
 static void Use_def(GRAPH::Node<LLVMIR::L_block*>* r, GRAPH::Graph<LLVMIR::L_block*>& bg,
                     std::vector<Temp_temp*>& args) {
     for(auto t = bg.mynodes.begin(); t != bg.mynodes.end(); t++){
-        auto thisBlock = t->second;
+        auto thisNode = t->second;
         useDef usedef;
-        for(auto stm: thisBlock->info->instrs){
+        for(auto stm: thisNode->info->instrs){
             list<Temp_temp*> use_list = get_use(stm);
             list<Temp_temp*> def_list = get_def(stm);
             for(auto u : use_list){
@@ -247,7 +249,7 @@ static void Use_def(GRAPH::Node<LLVMIR::L_block*>* r, GRAPH::Graph<LLVMIR::L_blo
                 TempSet_add(&usedef.def, d);
             }
         }
-        UseDefTable.emplace(thisBlock, usedef);
+        UseDefTable.emplace(thisNode, usedef);
     }
 }
 static int gi = 0;
@@ -256,23 +258,29 @@ static bool LivenessIteration(GRAPH::Node<LLVMIR::L_block*>* r,
                               GRAPH::Graph<LLVMIR::L_block*>& bg) {
     bool changed = false;
     gi++;
+    cout << bg.mynodes.size() <<endl;
     for(auto t = bg.mynodes.begin(); t != bg.mynodes.end(); t++){
-        auto thisNode = t->second;
-        TempSet in = TempSet_union(&FG_use(thisNode), TempSet_diff(&FG_Out(thisNode), &FG_def(thisNode)));
-
-        TempSet out = nullptr;
-        for(auto i: thisNode->succs){
-            auto it = bg.mynodes[i];
-            out = TempSet_union(out, &FG_In(it));
-        }
-
-        if(!(TempSet_eq(&FG_In(thisNode), in) && TempSet_eq(&FG_Out(thisNode), out))) changed = true;
-
         inOut inout;
-        inout.in = *in;
-        inout.out = *out;
+
+    cout<<"H-2" << t->first << endl;;
+        auto thisNode = t->second;
+        inout.in = *TempSet_union(&FG_use(thisNode), TempSet_diff(&FG_Out(thisNode), &FG_def(thisNode)));
+    cout<<"H-3" << thisNode << "\n";
+
+        for(auto i: thisNode->succs){
+            cout<<"H-3-1\n";
+            auto it = bg.mynodes[i];
+            cout<<"H-3-2\n";
+            inout.out = *TempSet_union(&inout.out, &FG_In(it));
+        }
+    cout<<"H-4\n";
+
+        if(!(TempSet_eq(&FG_In(thisNode), &inout.in) && TempSet_eq(&FG_Out(thisNode), &inout.out))) changed = true;
+    cout<<"H-5\n";
+
         InOutTable.emplace(thisNode, inout);
     }
+    cout<<"H-6\n";
 
     return changed;
 }
@@ -307,8 +315,10 @@ void Show_Liveness(FILE* out, GRAPH::Graph<LLVMIR::L_block*>& bg) {
 void Liveness(GRAPH::Node<LLVMIR::L_block*>* r, GRAPH::Graph<LLVMIR::L_block*>& bg,
               std::vector<Temp_temp*>& args) {
     init_INOUT();
+    cout << "USE_DEF\n";
     Use_def(r, bg, args);
     gi = 0;
     bool changed = true;
+    cout << "LivenessIteration\n";
     while (changed) changed = LivenessIteration(r, bg);
 }

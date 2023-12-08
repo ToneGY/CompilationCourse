@@ -73,4 +73,3 @@ liveness.o: liveness.cpp liveness.h  graph.hpp
 	@$(CXX) $(CXXFLAGS) -c $<
 clean:
 	rm -f *.o   compiler  tests/*.ll output/*.ll output/*.out tests/public/*.ll tests/private/*.ll
-

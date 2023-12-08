@@ -26,6 +26,7 @@ int line, col;
 A_program root;
 aA_program aroot;
 
+
 int main(int argc, char * argv[]) {
 
     #if YACCDEBUG
@@ -56,10 +57,17 @@ int main(int argc, char * argv[]) {
 
     // check_Prog(&std::cout, aroot);
 
+
+    ofstream LLVMStream1;
+    LLVMStream1.open(file_name + "==.ll");
+    auto prog = ast2llvm(aroot);
+    printL_prog(LLVMStream1,prog);
+    LLVMStream1.flush();
+    LLVMStream1.close();
+
+    prog=SSA(prog);
     ofstream LLVMStream;
     LLVMStream.open(file_name + ".ll");
-    auto prog = ast2llvm(aroot);
-    prog=SSA(prog);
     printL_prog(LLVMStream,prog);
     
     LLVMStream.close();

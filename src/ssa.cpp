@@ -39,32 +39,44 @@ static void init_table() {
     temp2ASoper.clear();
 }
 
+
+
 LLVMIR::L_prog *SSA(LLVMIR::L_prog *prog) {
     for (auto &fun : prog->funcs) {
         init_table();
+        cout << "COMBINE_ADDR\n";
         combine_addr(fun);
-
+        
+        cout << "mem2reg\n";
         mem2reg(fun);
 
+        cout << "Create_bg\n";
         auto RA_bg = Create_bg(fun->blocks);
 
+        cout << "SingleSourceGraph\n";
         SingleSourceGraph(RA_bg.mynodes[0], RA_bg, fun);
         // Show_graph(stdout,RA_bg);
 
+        cout << "Liveness\n";
         Liveness(RA_bg.mynodes[0], RA_bg, fun->args);
 
+        cout << "Dominators\n";
         Dominators(RA_bg);
         // printf_domi();
 
+        cout << "tree_Dominators\n";
         tree_Dominators(RA_bg);
         // printf_D_tree();
 
         // 默认0是入口block
+        cout << "computeDF\n";
         computeDF(RA_bg, RA_bg.mynodes[0]);
         // printf_DF();
 
+        cout << "Place_phi_fu\n";
         Place_phi_fu(RA_bg, fun);
 
+        cout << "Rename\n";
         Rename(RA_bg);
 
         combine_addr(fun);
