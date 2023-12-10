@@ -36,7 +36,6 @@ TempSet TempSet_diff(TempSet tl1, TempSet tl2);
 bool TempSet_eq(TempSet tl1, TempSet tl2);
 void TempSet_remove(TempSet tl, Temp_temp* t);
 
-
 struct TempDef
 {
     TempType kind;

@@ -1,0 +1,281 @@
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5 
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5
+bb1:
+        bb1
+bb2:
+        bb2
+bb3:
+        bb3 bb2
+bb4:
+        bb4 bb2
+bb5:
+        bb5
+bb6:
+        bb6 bb5
+bb7:
+        bb7 bb5

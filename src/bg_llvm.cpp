@@ -77,12 +77,12 @@ static void DFS(Node<L_block*>* r, Graph<L_block*>& bg) {
 }
 
 void SingleSourceGraph(Node<L_block*>* r, Graph<L_block*>& bg, L_func*fun) {
-    r->color = 1;
     DFS(r, bg);
 
     for (auto it = bg.mynodes.begin(); it != bg.mynodes.end(); ) {
         Node<L_block*>* r = it->second;
         if (r->color == 0) {
+            // cout << r->info->label->name << endl;
             it = bg.mynodes.erase(it); 
             fun->blocks.remove(r->info); 
         } else {
