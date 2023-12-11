@@ -120,7 +120,7 @@ union YYSTYPE
 	A_arithExpr arithExpr;
 	A_boolExpr boolExpr;
 	A_arithBiOpExpr arithBiOpExpr;
-	A_arithBiOp arithBiOp;
+	// A_arithBiOp arithBiOp;
 	A_arithUOp arithUOp;
 	A_boolBiOp boolBiOp;
 	A_arithUExpr arithUExpr;

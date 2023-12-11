@@ -613,11 +613,11 @@ std::vector<Temp_temp*> fd2args(aA_fnDecl fnd){
                 ao = AS_Operand_Temp(t1);
                 emit_irs.emplace_back(L_Alloca(ao));
                 emit_irs.emplace_back(L_Store(AS_Operand_Temp(tt), ao));
-                localVarMap.emplace(*a->u.declScalar->id, t1);
+                localVarMap[*a->u.declScalar->id] = t1;
                 break;
             case A_dataType::A_structTypeKind:
                 tt = Temp_newtemp_struct_ptr(0, *a->u.declScalar->type->u.structType);
-                localVarMap.emplace(*a->u.declScalar->id, tt);
+                localVarMap[*a->u.declScalar->id] = tt;
                 break;
             }
             break;
@@ -626,11 +626,11 @@ std::vector<Temp_temp*> fd2args(aA_fnDecl fnd){
             {
             case A_dataType::A_nativeTypeKind:
                 tt = Temp_newtemp_int_ptr(-1); // -1代表数组头
-                localVarMap.emplace(*a->u.declArray->id, tt);
+                localVarMap[*a->u.declArray->id] = tt;
                 break;
             case A_dataType::A_structTypeKind:
                 tt = Temp_newtemp_struct_ptr(-1, *a->u.declArray->type->u.structType);
-                localVarMap.emplace(*a->u.declArray->id, tt);
+                localVarMap[*a->u.declArray->id] = tt;
                 break;
             }
             break;
@@ -673,7 +673,7 @@ void vds2tt(aA_varDeclStmt v){
                 }
 
             }
-            localVarMap.emplace(id, tt);
+            localVarMap[id] = tt;
             AS_operand* lv = AS_Operand_Temp(tt);
             emit_irs.emplace_back(L_Alloca(lv));
     }else if(v->kind == A_varDeclStmtType::A_varDefKind){
@@ -682,7 +682,7 @@ void vds2tt(aA_varDeclStmt v){
             if(vdf->kind == A_varDefType::A_varDefScalarKind){
                 aA_varDefScalar vds = vdf->u.defScalar;
                 id = *vds->id;
-                // rvs.push_back(vds->val);
+                rvs.push_back(vds->val);
                 if(vds->type->type == A_dataType::A_nativeTypeKind){
                     tt = Temp_newtemp_int_ptr(0);
                     AS_operand* lv = AS_Operand_Temp(tt);
@@ -696,24 +696,25 @@ void vds2tt(aA_varDeclStmt v){
                 aA_varDefArray vda = vdf->u.defArray;
                 id = *vda->id;
                 rvs = vda->vals;
-                if(vda->type->type == A_dataType::A_nativeTypeKind){
-                    tt = Temp_newtemp_int_ptr(vda->len);
-                    AS_operand* lv = AS_Operand_Temp(tt);
-                    emit_irs.emplace_back(L_Alloca(lv));
-                    for(int i = 0; i < rvs.size(); i++){
-                        AS_operand* new_ptr = AS_Operand_Temp(Temp_newtemp_int_ptr(0));
-                        emit_irs.emplace_back(L_Gep(new_ptr, lv, AS_Operand_Const(i)));
-                        AS_operand* rv = ast2llvmRightVal(rvs[i]);
-                        emit_irs.emplace_back(L_Store(rv, new_ptr));
-                    }
-                }
-                else if(vda->type->type ==  A_dataType::A_structTypeKind)
-                    tt = Temp_newtemp_struct_ptr(vda->len, *vda->type->u.structType);
-            }
-            localVarMap.emplace(id, tt);
-            if(!rvs.empty()){
+                switch(vda->type->type){
+                    case A_dataType::A_nativeTypeKind:
+                        tt = Temp_newtemp_int_ptr(vda->len);
 
+                        break;
+                    case A_dataType::A_structTypeKind:
+                        tt = Temp_newtemp_struct_ptr(vda->len, *vda->type->u.structType);
+                        break;
+                }
             }
+            localVarMap[id] = tt;
+            // AS_operand* lv = AS_Operand_Temp(tt);
+            // emit_irs.emplace_back(L_Alloca(lv));
+            // for(int i = 0; i < rvs.size(); i++){
+            //     AS_operand* new_ptr;
+            //     emit_irs.emplace_back(L_Gep(new_ptr, lv, AS_Operand_Const(i)));
+            //     AS_operand* rv = ast2llvmRightVal(rvs[i]);
+            //     emit_irs.emplace_back(L_Store(rv, new_ptr));
+            // }
     }
 }
 
@@ -767,8 +768,8 @@ void ast2llvmBlock(aA_codeBlockStmt b,Temp_label *con_label,Temp_label *bre_labe
         {
             // std::cout << "A_assignStmtKind\n";
             auto v = b->u.assignStmt;
-            AS_operand* aol = ast2llvmLeftVal(v->leftVal);
             AS_operand* aor = ast2llvmRightVal(v->rightVal);
+            AS_operand* aol = ast2llvmLeftVal(v->leftVal);
             emit_irs.emplace_back(L_Store(aor, aol));
             // std::cout << "A_assignStmtKind_done\n";
         }
@@ -833,6 +834,9 @@ void ast2llvmBlock(aA_codeBlockStmt b,Temp_label *con_label,Temp_label *bre_labe
             // std::cout << "A_breakStmtKind\n";
             assert(con_label != nullptr && bre_label != nullptr);
             emit_irs.emplace_back(L_Jump(bre_label));
+            // emit_irs.emplace_back(L_Label(Temp_newlabel()));
+
+
             // std::cout << "A_breakStmtKind_done\n";
         }
         break;
@@ -841,6 +845,7 @@ void ast2llvmBlock(aA_codeBlockStmt b,Temp_label *con_label,Temp_label *bre_labe
             // std::cout << "A_continueStmtKind\n";
             assert(con_label != nullptr && bre_label != nullptr);
             emit_irs.emplace_back(L_Jump(con_label));
+            
             // std::cout << "A_continueStmtKind_done\n";
         }
         break;
@@ -1210,6 +1215,10 @@ AS_operand* ast2llvmExprUnit(aA_exprUnit e)
     
 }
 
+bool isBlkFinish(L_stm* r){
+    return r !=nullptr && (r->type == L_StmKind::T_JUMP || r->type == L_StmKind::T_RETURN);
+}
+
 LLVMIR::L_func* ast2llvmFuncBlock(Func_local *f)
 {
     std::list<L_stm*> irs = f->irs;
@@ -1222,6 +1231,11 @@ LLVMIR::L_func* ast2llvmFuncBlock(Func_local *f)
             instrs.clear();
         }
         // std::cout <<"                "<< stmKind2String(ir->type) <<std::endl;
+        if(isBlkFinish(ir) && isBlkFinish(instrs.back())){
+            if(!instrs.empty()) blocks.push_back(L_Block(instrs));
+            instrs.clear();
+            instrs.push_back(L_Label(Temp_newlabel()));
+        }
         instrs.push_back(ir);
     }
     if(!instrs.empty()) blocks.push_back(L_Block(instrs));

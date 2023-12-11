@@ -24,7 +24,7 @@ extern int  yywrap();
 	A_arithExpr arithExpr;
 	A_boolExpr boolExpr;
 	A_arithBiOpExpr arithBiOpExpr;
-	A_arithBiOp arithBiOp;
+	// A_arithBiOp arithBiOp;
 	A_arithUOp arithUOp;
 	A_boolBiOp boolBiOp;
 	A_arithUExpr arithUExpr;
@@ -170,15 +170,13 @@ leftVal
 rightVal : arithExpr { $$ = A_ArithExprRVal($1->pos, $1); }
 	| boolExpr { $$ = A_BoolExprRVal($1->pos, $1); }
 	
-arithBiOpExpr : arithExpr arithBiOp arithExpr { $$ = A_ArithBiOpExpr($1->pos, $2, $1, $3); }
+arithBiOpExpr : arithExpr OP_ADD arithExpr { $$ = A_ArithBiOpExpr($1->pos, A_add, $1, $3); }
+	| arithExpr OP_SUB arithExpr { $$ = A_ArithBiOpExpr($1->pos, A_sub, $1, $3); }
+	| arithExpr OP_MUL arithExpr { $$ = A_ArithBiOpExpr($1->pos,  A_mul, $1, $3); }
+	| arithExpr OP_DIV arithExpr { $$ = A_ArithBiOpExpr($1->pos, A_div, $1, $3); }
 
-arithExpr : arithBiOpExpr { $$ = A_ArithBiOp_Expr($1->pos, $1); }
+arithExpr  : arithBiOpExpr { $$ = A_ArithBiOp_Expr($1->pos, $1); }
 	| exprUnit { $$ = A_ExprUnit($1->pos, $1); }
-
-arithBiOp : OP_ADD { $$ = A_add; }
-	| OP_SUB { $$ = A_sub; } 
-	| OP_MUL { $$ = A_mul; } 
-	| OP_DIV { $$ = A_div; }
 
 arithUExpr : OP_SUB exprUnit { $$ = A_ArithUExpr($1, A_neg, $2); }
 

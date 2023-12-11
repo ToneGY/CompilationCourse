@@ -56,20 +56,20 @@ int main(int argc, char * argv[]) {
     // ASTStream.close();
 
     // check_Prog(&std::cout, aroot);
+    // cout << file_name << " ================================================== \n";
 
-
-    ofstream LLVMStream1;
-    LLVMStream1.open(file_name + "==.ll");
     auto prog = ast2llvm(aroot);
-    printL_prog(LLVMStream1,prog);
-    LLVMStream1.flush();
-    LLVMStream1.close();
+    ofstream LLVMStream;
+    // LLVMStream.open(file_name + "_unssa.ll");
+    // printL_prog(LLVMStream, prog);
+    // LLVMStream.flush();
+    // LLVMStream.close();
 
     prog=SSA(prog);
-    ofstream LLVMStream;
     LLVMStream.open(file_name + ".ll");
     printL_prog(LLVMStream,prog);
-    
+
+
     LLVMStream.close();
     printf("exit\n");
     return 0;

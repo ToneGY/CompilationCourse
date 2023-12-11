@@ -298,7 +298,9 @@ void Liveness(GRAPH::Node<LLVMIR::L_block*>* r, GRAPH::Graph<LLVMIR::L_block*>& 
     bool changed = true;
     while (changed) changed = LivenessIteration(r, bg);
 
-    // FILE *outputFile = fopen("liveness.txt", "w");
+    // int i = bg.mynodes.size();
+    // string filename = "liveness.txt" + to_string(i);
+    // FILE *outputFile = fopen(filename.c_str(), "w");
     // Show_Liveness(outputFile, bg);
     // fflush(outputFile);
     // fclose(outputFile);

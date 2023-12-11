@@ -82,8 +82,10 @@ void SingleSourceGraph(Node<L_block*>* r, Graph<L_block*>& bg, L_func*fun) {
     for (auto it = bg.mynodes.begin(); it != bg.mynodes.end(); ) {
         Node<L_block*>* r = it->second;
         if (r->color == 0) {
-            // cout << r->info->label->name << endl;
             it = bg.mynodes.erase(it); 
+            for(auto s : r->succs){
+                bg.mynodes[s]->preds.erase(r->mykey);
+            }
             fun->blocks.remove(r->info); 
         } else {
             ++it;
