@@ -255,7 +255,6 @@ void printf_DF() {
 }
 
 void tree_Dominators(GRAPH::Graph<LLVMIR::L_block *> &bg) {
-    //   Todo
     for(auto it : dominators){
         L_block* thisBlock = it.first;
         auto dominator = it.second;
@@ -279,7 +278,6 @@ void tree_Dominators(GRAPH::Graph<LLVMIR::L_block *> &bg) {
 }
 
 void computeDF(GRAPH::Graph<LLVMIR::L_block *> &bg, GRAPH::Node<LLVMIR::L_block *> *r) {
-    //   Todo
     unordered_set<L_block *> set;
     for(auto i : r->succs){
         L_block* lb = bg.mynodes[i]->info;
@@ -303,8 +301,6 @@ void computeDF(GRAPH::Graph<LLVMIR::L_block *> &bg, GRAPH::Node<LLVMIR::L_block 
 
 // 只对标量做
 void Place_phi_fu(GRAPH::Graph<LLVMIR::L_block *> &bg, L_func *fun) {
-    //   Todo
-
     map<Temp_temp*, set<Node<L_block*>*>> defsites;
     map<L_block*, set<Temp_temp*>> phisets;
 
@@ -454,7 +450,6 @@ static void Rename_temp(GRAPH::Graph<LLVMIR::L_block *> &bg, GRAPH::Node<LLVMIR:
 }
 
 void Rename(GRAPH::Graph<LLVMIR::L_block *> &bg) {
-    //   Todo
     unordered_map<Temp_temp *, stack<Temp_temp *>> Stack;
 
     // for(auto it = bg.mynodes.begin(); it != bg.mynodes.end(); it++){

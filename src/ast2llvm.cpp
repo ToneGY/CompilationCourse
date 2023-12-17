@@ -288,22 +288,23 @@ int ast2llvmExprUnit_first(aA_exprUnit e)
 std::vector<LLVMIR::L_def*> ast2llvmProg_first(aA_program p)
 {
     vector<L_def*> defs;
-    defs.push_back(L_Funcdecl("getch",vector<TempDef>(),FuncType(ReturnType::INT_TYPE)));
-    defs.push_back(L_Funcdecl("getint",vector<TempDef>(),FuncType(ReturnType::INT_TYPE)));
+
     
     funcReturnMap.emplace("getch",FuncType(ReturnType::INT_TYPE));
     funcReturnMap.emplace("getint",FuncType(ReturnType::INT_TYPE));
 
 
+    // defs.push_back(L_Funcdecl("getch",vector<TempDef>(),FuncType(ReturnType::INT_TYPE)));
+    // defs.push_back(L_Funcdecl("getint",vector<TempDef>(),FuncType(ReturnType::INT_TYPE)));
+    // defs.push_back(L_Funcdecl("putch",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
 
-    defs.push_back(L_Funcdecl("putch",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
-
-    defs.push_back(L_Funcdecl("putint",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
+    // defs.push_back(L_Funcdecl("putint",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
     
-    defs.push_back(L_Funcdecl("putarray",vector<TempDef>{TempDef(TempType::INT_TEMP),TempDef(TempType::INT_PTR,-1)},FuncType(ReturnType::VOID_TYPE)));
+    // defs.push_back(L_Funcdecl("putarray",vector<TempDef>{TempDef(TempType::INT_TEMP),TempDef(TempType::INT_PTR,-1)},FuncType(ReturnType::VOID_TYPE)));
 
-    defs.push_back(L_Funcdecl("_sysy_starttime",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
-    defs.push_back(L_Funcdecl("_sysy_stoptime",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
+    // defs.push_back(L_Funcdecl("_sysy_starttime",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
+    // defs.push_back(L_Funcdecl("_sysy_stoptime",vector<TempDef>{TempDef(TempType::INT_TEMP)},FuncType(ReturnType::VOID_TYPE)));
+
     for(const auto &v : p->programElements)
     {
         switch (v->kind)
@@ -962,22 +963,31 @@ AS_operand* ast2llvmLeftVal(aA_leftVal l)
 {
     switch(l->kind){
         case A_leftValType::A_varValKind:
+            // cout << "ID: " << *l->u.id << "\n";
             return getIdPtr(*l->u.id);
         case A_leftValType::A_arrValKind:
         {
+            // cout << "ARRAY\n";
             AS_operand* arr = ast2llvmLeftVal(l->u.arrExpr->arr);
             AS_operand* ids = ast2llvmIndexExpr(l->u.arrExpr->idx);
             AS_operand* np = arrayElement(arr);
             emit_irs.emplace_back(L_Gep(np, arr, ids));
+            // cout << "ARRAY_done\n";
+
             return np;
         }
         case A_leftValType::A_memberValKind:
         {
+            // cout << "STRUCT\n";
             AS_operand* s = ast2llvmLeftVal(l->u.memberExpr->structId);
+            // cout << "HI\n";
+            // cout << s->u.TEMP->structname << " " << *l->u.memberExpr->memberId << "\n"; 
             AS_operand* off=nullptr;
-            AS_operand* m = getMemberOff_Type(s->u.TEMP->structname, *l->u.memberExpr->memberId, off);
+            string structname = s->kind == OperandKind::TEMP ? s->u.TEMP->structname : s->u.NAME->structname;
+            AS_operand* m = getMemberOff_Type(structname, *l->u.memberExpr->memberId, off);
             assert(off!=nullptr);
             emit_irs.emplace_back(L_Gep(m, s, off));
+            // cout << "STRUCT_done\n";
             return m;
         }
     }

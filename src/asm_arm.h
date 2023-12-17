@@ -9,6 +9,14 @@
 
 namespace ASM {
 
+/*
+* `reg >= 0` 代表通用寄存器，`reg == 1 -> x1` 。在指令翻译部分，翻译出的寄存器都是**虚拟寄存器**，即 `reg >= 100` ，该序号和 `LLVM IR` 中的无限寄存器序号保持一致。
+  * **部分临时要用的寄存器需翻译成物理寄存器（hardcode），这些寄存器的出现场景和对应序号已给大家写死，以减小难度，具体见下文。**
+  * 对于访问通用寄存器， `offset` 设置为 `0` 即可
+* `reg == -3` 代表立即数，此时 `offset` 代表立即数大小，`reg = -3, offset = 1 => #1`
+* `reg == -1, offset != -1` 代表使用 `sp` 在栈上间接寻址， `offset` 保存的栈上地址距离 `sp` 的偏移量， `reg = -1, offset = 1 => [sp, #1]`
+* `reg == -1, offset == -1` 代表直接对 `sp` 直接运算 `reg = -1, offset = -1 => sp` (不是间接寻址)
+*/
 struct AS_reg {
     int reg;
     int offset;
@@ -132,16 +140,16 @@ struct AS_stm {
     AS_stmkind type;
     union {
         AS_binop *BINOP;
-        AS_mov *MOV;
-        AS_ldr *LDR;
-        AS_str *STR;
-        AS_adr *ADR;
-        AS_label *LABEL;
-        AS_b *B;
-        AS_bcond *BCOND;
-        AS_bl *BL;
-        AS_cmp *CMP;
-        AS_ret *RET;
+        AS_mov *MOV;        // Move
+        AS_ldr *LDR;        // Load
+        AS_str *STR;        // Store
+        AS_adr *ADR;        // Load Label
+        AS_label *LABEL;    // Label
+        AS_b *B;            // Jump
+        AS_bcond *BCOND;    // CJump
+        AS_bl *BL;          // Call
+        AS_cmp *CMP;        // Comp
+        AS_ret *RET;        // Return
     } u;
 };
 
