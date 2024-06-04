@@ -1,9 +1,5 @@
 <center><h1>编译原理实验：Assignment 2</h1></center>
 
-<center>指导老师：徐辉</center>
-<center>助教：倪雯倩 陈实立 董方
-崔漠寒 王兆瀚 柏露 张业鸿</center>
-<center>2023 年秋季学期</center>
 
 ## 实验介绍
 
